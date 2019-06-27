@@ -1,0 +1,10 @@
+Package: me.chr0nic.safemode
+Name: Safemode
+Depends: mobilesubstrate
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: Tanay Findley
+Author: Tanay Findley
+Section: Tweaks
+Version: 0.0.1-5+debug
+Installed-Size: 152

@@ -1,0 +1,8 @@
+Origin: Slice
+Label: Slice
+Suite: stable
+Version: 0.1
+Codename: Slice
+Architectures: iphoneos-arm
+Components: main
+Description: Slice Resources
