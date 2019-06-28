@@ -540,8 +540,8 @@
 		B89BAA0622826A9F00964B6F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
-				ORGANIZATIONNAME = "Slice Team";
+				LastUpgradeCheck = 1100;
+				ORGANIZATIONNAME = "Ziyou Team";
 				TargetAttributes = {
 					B89BAA0D22826A9F00964B6F = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -812,13 +812,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					arm64e,
-					arm64,
-				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 95MPSDK9P6;
+				DEVELOPMENT_TEAM = L2M326JQMC;
 				INFOPLIST_FILE = Ziyou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -830,7 +826,7 @@
 					IOKit,
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = team.ziyou.ziyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maxbridgland.Ziyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e";
@@ -841,13 +837,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					arm64e,
-					arm64,
-				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 95MPSDK9P6;
+				DEVELOPMENT_TEAM = L2M326JQMC;
 				INFOPLIST_FILE = Ziyou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -859,7 +851,7 @@
 					IOKit,
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = team.ziyou.ziyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maxbridgland.Ziyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e";

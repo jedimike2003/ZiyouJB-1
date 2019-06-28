@@ -10,7 +10,7 @@
 #ifndef utils_h
 #define utils_h
 
-#define showMSG(msg, wait, destructive) showAlert(@"Slice", msg, wait, destructive)
+#define showMSG(msg, wait, destructive) showAlert(@"Ziyou", msg, wait, destructive)
 #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 #define _assert(test, message, fatal) do \
 if (!(test)) { \

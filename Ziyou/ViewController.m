@@ -172,7 +172,7 @@ void wannaSliceOfMe() {
     //1 = MachSwap2
     //2 = Voucher_Swap
     
-    runExploit(0); //Change this depending on what device you have...
+    runExploit(1); //Change this depending on what device you have...
     
 
     

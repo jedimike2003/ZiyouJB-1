@@ -1,8 +1,8 @@
-Origin: Slice
-Label: Slice
+Origin: Ziyou
+Label: Ziyou
 Suite: stable
 Version: 0.1
-Codename: Slice
+Codename: Ziyou
 Architectures: iphoneos-arm
 Components: main
-Description: Slice Resources
+Description: Ziyou Resources
