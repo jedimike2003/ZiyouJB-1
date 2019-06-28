@@ -172,7 +172,7 @@ void wannaSliceOfMe() {
     //1 = MachSwap2
     //2 = Voucher_Swap
     
-    runExploit(1); //Change this depending on what device you have...
+    runExploit(2); //Change this depending on what device you have...
     
 
     
@@ -300,6 +300,123 @@ void wannaSliceOfMe() {
 
 
 ///////////////////////----UI STUFF----////////////////////////////
+- (IBAction)MS1_ACTION:(UIButton *)sender {
+    
+    //color var
+    UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
+    UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
+    UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
+    
+    //button color
+    self.VS_Outlet.backgroundColor = purple;
+    self.MS1_OUTLET.backgroundColor = white;
+    self.MS2_Outlet.backgroundColor = purple;
+    
+    //button label color
+    [self.VS_Outlet setTitleColor:white forState:UIControlStateNormal];
+    [self.MS1_OUTLET setTitleColor:black forState:UIControlStateNormal];
+    [self.MS2_Outlet setTitleColor:white forState:UIControlStateNormal];
+    
+}
+
+- (IBAction)MS2_ACTION:(UIButton *)sender {
+    UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
+    UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
+    UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
+    
+    self.VS_Outlet.backgroundColor = purple;
+    self.MS1_OUTLET.backgroundColor = purple;
+    self.MS2_Outlet.backgroundColor = white;
+    
+    //button label color
+    [self.VS_Outlet setTitleColor:white forState:UIControlStateNormal];
+    [self.MS1_OUTLET setTitleColor:white forState:UIControlStateNormal];
+    [self.MS2_Outlet setTitleColor:black forState:UIControlStateNormal];
+}
+
+- (IBAction)VS_ACTION:(UIButton *)sender {
+    UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
+    UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
+    UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
+    
+    
+    self.VS_Outlet.backgroundColor = white;
+    self.MS1_OUTLET.backgroundColor = purple;
+    self.MS2_Outlet.backgroundColor = purple;
+    
+    //button label color
+    [self.VS_Outlet setTitleColor:black forState:UIControlStateNormal];
+    [self.MS1_OUTLET setTitleColor:white forState:UIControlStateNormal];
+    [self.MS2_Outlet setTitleColor:white forState:UIControlStateNormal];
+    
+}
+
+- (IBAction)Cydia_Button:(UIButton *)sender {
+    UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
+    UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
+    UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
+    
+    
+    self.Cydia_Outlet.backgroundColor = white;
+    self.Zebra_Outlet.backgroundColor = purple;
+    self.Sileo_Outlet.backgroundColor = purple;
+    
+    //button label color
+    [self.Cydia_Outlet setTitleColor:black forState:UIControlStateNormal];
+    [self.Zebra_Outlet setTitleColor:white forState:UIControlStateNormal];
+    [self.Sileo_Outlet setTitleColor:white forState:UIControlStateNormal];
+    
+}
+
+- (IBAction)Zebra_Button:(UIButton *)sender {
+    //color var
+    UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
+    UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
+    UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
+    
+    //button color
+    self.Cydia_Outlet.backgroundColor = purple;
+    self.Zebra_Outlet.backgroundColor = white;
+    self.Sileo_Outlet.backgroundColor = purple;
+    
+    //button label color
+    [self.Cydia_Outlet setTitleColor:white forState:UIControlStateNormal];
+    [self.Zebra_Outlet setTitleColor:black forState:UIControlStateNormal];
+    [self.Sileo_Outlet setTitleColor:white forState:UIControlStateNormal];
+}
+
+- (IBAction)Sileo_Button:(UIButton *)sender {
+    UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
+    UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
+    UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
+    
+    self.Cydia_Outlet.backgroundColor = purple;
+    self.Zebra_Outlet.backgroundColor = purple;
+    self.Sileo_Outlet.backgroundColor = white;
+    
+    //button label color
+    [self.Cydia_Outlet setTitleColor:white forState:UIControlStateNormal];
+    [self.Zebra_Outlet setTitleColor:white forState:UIControlStateNormal];
+    [self.Sileo_Outlet setTitleColor:black forState:UIControlStateNormal];
+}
+- (IBAction)Restore_FS_Switch_Action:(UISwitch *)sender {
+    if (self.restoreFSSwitch.on == YES)
+    {
+        restore_fs = true;
+        [self.buttontext setTitle:[NSString stringWithFormat:@"Restore RootFS"] forState:UIControlStateNormal];
+        self.loadTweakSwitch.on = NO;
+    } else {
+        restore_fs = false;
+    }
+}
+
+- (IBAction)dismissSwipe:(UISwipeGestureRecognizer *)sender {
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+- (IBAction)dismissButton:(UIButton *)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 
 

@@ -26,6 +26,33 @@
 @property (strong, nonatomic) IBOutlet UISwitch *loadTweakSwitch;
 
 
+//-------UI STUFF--------//
+
+//SWITCH FUNCTIONS
+- (IBAction)Restore_FS_Switch_Action:(UISwitch *)sender;
+
+//THE EXPLOIT BUTTONS outlet
+@property (weak, nonatomic) IBOutlet UIButton *VS_Outlet;
+@property (weak, nonatomic) IBOutlet UIButton *MS1_OUTLET;
+@property (weak, nonatomic) IBOutlet UIButton *MS2_Outlet;
+
+//the exploit buttons action
+
+- (IBAction)MS1_ACTION:(UIButton *)sender;
+- (IBAction)MS2_ACTION:(UIButton *)sender;
+- (IBAction)VS_ACTION:(UIButton *)sender;
+
+//THE PACKAGE MANAGER BUTTONS outlet
+@property (weak, nonatomic) IBOutlet UIButton *Cydia_Outlet;
+@property (weak, nonatomic) IBOutlet UIButton *Zebra_Outlet;
+@property (weak, nonatomic) IBOutlet UIButton *Sileo_Outlet;
+
+//the package manager buttons action
+- (IBAction)Cydia_Button:(UIButton *)sender;
+- (IBAction)Zebra_Button:(UIButton *)sender;
+- (IBAction)Sileo_Button:(UIButton *)sender;
+
+
 @end
 
 static inline void showAlertWithCancel(NSString *title, NSString *message, Boolean wait, Boolean destructive, NSString *cancel) {
