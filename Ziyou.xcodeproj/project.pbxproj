@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3D165D19FD5855150DF08C27 /* libPods-Slice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 888DFDAB229DA348004F4F6F /* libPods-Slice.a */; };
+		30B076F9B59B0E4B40A8DBB5 /* libPods-Ziyou.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B579F8955712B6439B2A645F /* libPods-Ziyou.a */; };
 		8850DDEA229AF1E000D18B83 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8850DDE9229AF1E000D18B83 /* LaunchScreen.storyboard */; };
 		88E01545228B629A00F9E519 /* voucher_swap.c in Sources */ = {isa = PBXBuildFile; fileRef = 88E01537228B629A00F9E519 /* voucher_swap.c */; };
 		88EFC47722836924005FA5BB /* utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFC47622836924005FA5BB /* utils.m */; };
@@ -69,12 +69,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1492F2F9464DC723BB6C7139 /* libPods-Slice.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Slice.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		58F2A5532C6C16A9B6E81524 /* Pods-Slice.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Slice.release.xcconfig"; path = "Target Support Files/Pods-Slice/Pods-Slice.release.xcconfig"; sourceTree = "<group>"; };
-		800F6356898E5E3CA8F85B95 /* Pods-Slice.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Slice.debug.xcconfig"; path = "Target Support Files/Pods-Slice/Pods-Slice.debug.xcconfig"; sourceTree = "<group>"; };
+		641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ziyou.debug.xcconfig"; path = "Target Support Files/Pods-Ziyou/Pods-Ziyou.debug.xcconfig"; sourceTree = "<group>"; };
 		8850DDE9229AF1E000D18B83 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		888DFDA9229D9E9B004F4F6F /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
-		888DFDAB229DA348004F4F6F /* libPods-Slice.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = "libPods-Slice.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		88E01537228B629A00F9E519 /* voucher_swap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = voucher_swap.c; sourceTree = "<group>"; };
 		88E01538228B629A00F9E519 /* voucher_swap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = voucher_swap.h; sourceTree = "<group>"; };
 		88E01546228B638700F9E519 /* ipc_port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ipc_port.h; sourceTree = "<group>"; };
@@ -94,6 +91,8 @@
 		901F1E8B22B6B5FC00D9A390 /* SF-Pro-Rounded-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Thin.otf"; path = "Artwork/Fonts/SF-Pro-Rounded-Thin.otf"; sourceTree = SOURCE_ROOT; };
 		901F1E8C22B6B5FC00D9A390 /* SF-Pro-Display-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Display-Thin.otf"; path = "Artwork/Fonts/SF-Pro-Display-Thin.otf"; sourceTree = SOURCE_ROOT; };
 		901F1E8D22B6B5FD00D9A390 /* SF-Pro-Display-UltralightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Display-UltralightItalic.otf"; path = "Artwork/Fonts/SF-Pro-Display-UltralightItalic.otf"; sourceTree = SOURCE_ROOT; };
+		B579F8955712B6439B2A645F /* libPods-Ziyou.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ziyou.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ziyou.release.xcconfig"; path = "Target Support Files/Pods-Ziyou/Pods-Ziyou.release.xcconfig"; sourceTree = "<group>"; };
 		B8268668228760C90062035C /* bootstrap */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bootstrap; sourceTree = "<group>"; };
 		B8346CD72283B975009F6311 /* remap_tfp_set_hsp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = remap_tfp_set_hsp.c; sourceTree = "<group>"; };
 		B8346CD82283B975009F6311 /* remap_tfp_set_hsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = remap_tfp_set_hsp.h; sourceTree = "<group>"; };
@@ -198,7 +197,7 @@
 				B8FB44FB2284F76100CEDF47 /* libarchive.tbd in Frameworks */,
 				B8FB44F22284F3F700CEDF47 /* libmis.tbd in Frameworks */,
 				88EFC47B228369E8005FA5BB /* IOKit.framework in Frameworks */,
-				3D165D19FD5855150DF08C27 /* libPods-Slice.a in Frameworks */,
+				30B076F9B59B0E4B40A8DBB5 /* libPods-Ziyou.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,8 +207,8 @@
 		7E5ADF0E333DC2AF91F6A3A1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				800F6356898E5E3CA8F85B95 /* Pods-Slice.debug.xcconfig */,
-				58F2A5532C6C16A9B6E81524 /* Pods-Slice.release.xcconfig */,
+				641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */,
+				B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -226,12 +225,11 @@
 		88EFC479228369E8005FA5BB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				888DFDAB229DA348004F4F6F /* libPods-Slice.a */,
 				888DFDA9229D9E9B004F4F6F /* AVKit.framework */,
 				B8FB44F72284F70A00CEDF47 /* libarchive.tbd */,
 				B8FB44F12284F3F700CEDF47 /* libmis.tbd */,
 				88EFC47A228369E8005FA5BB /* IOKit.framework */,
-				1492F2F9464DC723BB6C7139 /* libPods-Slice.a */,
+				B579F8955712B6439B2A645F /* libPods-Ziyou.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -521,11 +519,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B89BAA2422826AA000964B6F /* Build configuration list for PBXNativeTarget "Ziyou" */;
 			buildPhases = (
-				58F5DF8DC0D260D895A6B4F2 /* [CP] Check Pods Manifest.lock */,
+				C779FD892EA2760CF78E060A /* [CP] Check Pods Manifest.lock */,
 				B89BAA0A22826A9F00964B6F /* Sources */,
 				B89BAA0B22826A9F00964B6F /* Frameworks */,
 				B89BAA0C22826A9F00964B6F /* Resources */,
-				1A0DFE4C85E740775E91C37D /* [CP] Copy Pods Resources */,
+				5F2F4A2F059D0156E334BCE2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -596,24 +594,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1A0DFE4C85E740775E91C37D /* [CP] Copy Pods Resources */ = {
+		5F2F4A2F059D0156E334BCE2 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Slice/Pods-Slice-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Ziyou/Pods-Ziyou-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Slice/Pods-Slice-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Ziyou/Pods-Ziyou-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Slice/Pods-Slice-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ziyou/Pods-Ziyou-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		58F5DF8DC0D260D895A6B4F2 /* [CP] Check Pods Manifest.lock */ = {
+		C779FD892EA2760CF78E060A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -628,7 +626,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Slice-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Ziyou-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -812,7 +810,7 @@
 		};
 		B89BAA2522826AA000964B6F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 800F6356898E5E3CA8F85B95 /* Pods-Slice.debug.xcconfig */;
+			baseConfigurationReference = 641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = (
 					arm64e,
@@ -841,7 +839,7 @@
 		};
 		B89BAA2622826AA000964B6F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 58F2A5532C6C16A9B6E81524 /* Pods-Slice.release.xcconfig */;
+			baseConfigurationReference = B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */;
 			buildSettings = {
 				ARCHS = (
 					arm64e,
