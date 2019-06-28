@@ -15,9 +15,21 @@ This software was built from research from a bunch of different developers. The 
 
 @Jakeashacks (For helping with bug fixes, jelbreklib, and more)
 
+@Pwn20wnd  (For helping @Chr0nicT understand some stuff, remount, sandbox extensions function for jailbreakd, exploits)
+
+@iBSparkes (Exploits)
+
+@_bazad (Exploits, kernel_call)
+
+@xerub (patchfinder64)
+
+@comex (Substitute)
+
+@saurik (Cydia)
+
 @maxbridgland
 
-@Chr0nic
+@Chr0nicT
 
 @BrandonPlank6
 
