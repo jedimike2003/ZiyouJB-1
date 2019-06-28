@@ -1,22 +1,27 @@
-# Slice
+<center>
+  <a href=""><img src="https://cdn.maxbridgland.com/ziyou_banner.png"></a>
+  <br>
+  <h1 align="center">Ziyou Jailbreak</h1>
+  <h5 align="center">Bringing Freedom To Your Device</h5>
+</center>
 
-## Whats Done.
-* TFP0
-* Remap
-* Unsandbox
-* Remount
-* SSH (Dev purposes only, this will be removed)
-* pspawn_payload
-* amfid_payload
-* TweakInject
-* Daemons
-* Base Tools/Utils
+# What Is This?
 
-## What Needs To Be Done.
-* A LOT, MAN!
+This is the official public mirror for the Ziyou Git Repository. This will be periodically updated upon release of new versions. **In the current state this is not a complete product. We are using this as a timestamp to show when we had our code out there for future reference.** If you are interested in contributing to this project please checkout the Contributing section of this README. The Ziyou Jailbreak is a WIP and we are not responsible for any damage that occurs on your device due to use of this software. This software is licensed under the GNU GPLv3 License.
 
-<p align="center">
-  <b>NOTE: MOST OF THIS IS THROWN TOGETHER TO JUST SEE IF WE CAN GET SUBSTITUTE WORKING. DO NOT LOOK AT THIS AS A WORKING TOWARDS FINAL TYPE-OF THING.</b>
+This software was built from research from a bunch of different developers. The final product is the work of myself and the Slice team. We decided to work together with the research we both had and build this. Once we release the product all credit for everything used will be given down below. For now it's the main contributors.
 
-   <b>BUT WE'LL GET THERE! 💪🏻</b>
-</p>
+# Credit
+
+@Jakeashacks (For helping with bug fixes, jelbreklib, and more)
+
+@maxbridgland
+
+@Chr0nic
+
+@BrandonPlank6
+
+@ConorTheDev
+
+@DaveWijk
+
