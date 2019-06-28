@@ -935,6 +935,27 @@ bool ensure_symlink(const char *to, const char *from) {
 }
 
 
+bool copyMe(const char *from, const char *to)
+{
+    NSError *error;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:from]])
+    {
+        [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithUTF8String:from] toPath:[NSString stringWithUTF8String:to] error:&error];
+        
+        if (error)
+        {
+            LOG("ERROR: %@", error);
+        } else {
+            LOG("FILE COPIED!");
+        }
+        
+    } else {
+        LOG("FILE DOESN'T EXIST!");
+    }
+    
+    return false;
+}
+
 void remountFS(bool shouldRestore) {
     
     
@@ -1144,8 +1165,14 @@ void removeFileIfExists(const char *fileToRemove)
 void startJailbreakD()
 {
     removeFileIfExists("/var/log/pspawn.log");
+    
+    removeFileIfExists("/ziyou/jailbreakd.old.log");
+    copyMe("/var/log/jailbreakd-stderr.log", "/ziyou/jailbreakd.old.log");
+    
     removeFileIfExists("/var/log/jailbreakd-stdout.log");
     removeFileIfExists("/var/log/jailbreakd-stderr.log");
+    
+    
     removeFileIfExists("/var/log/jailbreakd-stdout.log.bak");
     removeFileIfExists("/var/log/jailbreakd-stderr.log.bak");
     removeFileIfExists("/var/log/amfid_payload.log");
@@ -1415,26 +1442,7 @@ NSArray *getPackages(const char *packageFile)
     return array;
 }
 
-bool copyMe(const char *from, const char *to)
-{
-    NSError *error;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:from]])
-    {
-        [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithUTF8String:from] toPath:[NSString stringWithUTF8String:to] error:&error];
-        
-        if (error)
-        {
-            LOG("ERROR: %@", error);
-        } else {
-            LOG("FILE COPIED!");
-        }
-        
-    } else {
-        LOG("FILE DOESN'T EXIST!");
-    }
-    
-    return false;
-}
+
 
 void createLocalRepo()
 {
