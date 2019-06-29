@@ -31,21 +31,62 @@
 
 
 @interface ViewController ()
-{
-    IBOutlet UISwitch *loadTweaksToggleSwitch;
-    
-    IBOutlet UISwitch *restoreFSToggleSwitch;
-}
-
 @end
 
 @implementation ViewController
 
 ViewController *sharedController = nil;
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[NSUserDefaults standardUserDefaults] setValue:@(NO) forKey:@"_UIConstraintBasedLayoutLogUnsatisfiable"];
+    
+    
+    
+    
+    initSettingsIfNotExist();
+    if (shouldLoadTweaks())
+    {
+        [_loadTweakSwitch setOn:true];
+    } else {
+        [_loadTweakSwitch setOn:false];
+    }
+    
+    //0 = Cydia
+    //1 = Zebra
+    if (getPackagerType() == 0)
+    {
+        [_Cydia_Outlet sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else if (getPackagerType() == 1)
+    {
+        [_Zebra_Outlet sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else if (getPackagerType() == 2)
+    {
+        [_Sileo_Outlet sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    //0 = MS
+    //1 = MS2
+    //2 = VS
+    if (getExploitType() == 0)
+    {
+        [_MS1_OUTLET sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else if (getExploitType() == 1)
+    {
+        [_MS2_Outlet sendActionsForControlEvents:UIControlEventTouchUpInside];
+    } else if (getExploitType() == 2)
+    {
+        [_VS_Outlet sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    if (shouldRestoreFS())
+    {
+        [_restoreFSSwitch setOn:true];
+    } else {
+        [_restoreFSSwitch setOn:false];
+    }
+    
     NSLog(@"Starting the jailbreak...");
     sharedController = self;
     
@@ -146,7 +187,13 @@ void logSlice(const char *sliceOfText) {
 bool restore_fs = false;
 bool loadTweaks = true;
 
+int exploitType = 0;
 
+
+//0 = Cydia
+//1 = Zebra
+
+int packagerType = 0;
 
 void wannaSliceOfMe() {
     //Run The Exploit
@@ -172,7 +219,7 @@ void wannaSliceOfMe() {
     //1 = MachSwap2
     //2 = Voucher_Swap
     
-    runExploit(2); //Change this depending on what device you have...
+    runExploit(getExploitType()); //Change this depending on what device you have...
     
 
     
@@ -200,7 +247,7 @@ void wannaSliceOfMe() {
     [SVProgressHUD showWithStatus:@"Installing Bootstrap"];
     saveOffs();
     setHSP4();
-    initInstall();
+    initInstall(getPackagerType());
     [SVProgressHUD showWithStatus:@"Installed Bootstrap"];
 
     runOnMainQueueWithoutDeadlocking(^{
@@ -256,23 +303,33 @@ void wannaSliceOfMe() {
 - (IBAction)jailbreak:(id)sender {
     
     //HERE
-    /*
-    if (restoreFSToggleSwitch.isOn)
+    if (shouldRestoreFS())
     {
+        
+        
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"WARNING" message:@"You have selected that you would like to restore your RootFS. This is your LAST chance to back out. Would you like to continue?" preferredStyle:UIAlertControllerStyleAlert];
+        
+        [ac addAction:[UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action){
+            exit(0);
+        }]];
+        
+        [ac addAction:[UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action){
+            return;
+        }]];
+        
+        [self presentViewController:ac animated:true completion:nil];
+        
         restore_fs = true;
     } else {
         restore_fs = false;
     }
     
-    if (loadTweaksToggleSwitch.isOn)
+    if (shouldLoadTweaks())
     {
         loadTweaks = true;
     } else {
         loadTweaks = false;
     }
-     */
-    restore_fs = false;
-    loadTweaks = true;
     
     //Disable The Button
     [sender setEnabled:false];
@@ -297,10 +354,10 @@ void wannaSliceOfMe() {
 }
 
 
-
-
 ///////////////////////----UI STUFF----////////////////////////////
 - (IBAction)MS1_ACTION:(UIButton *)sender {
+    
+    saveCustomSetting(@"ExploitType", 0);
     
     //color var
     UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
@@ -320,6 +377,9 @@ void wannaSliceOfMe() {
 }
 
 - (IBAction)MS2_ACTION:(UIButton *)sender {
+    
+    saveCustomSetting(@"ExploitType", 1);
+    
     UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
     UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
     UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
@@ -335,6 +395,9 @@ void wannaSliceOfMe() {
 }
 
 - (IBAction)VS_ACTION:(UIButton *)sender {
+    
+    saveCustomSetting(@"ExploitType", 2);
+    
     UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
     UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
     UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
@@ -352,6 +415,9 @@ void wannaSliceOfMe() {
 }
 
 - (IBAction)Cydia_Button:(UIButton *)sender {
+    
+    saveCustomSetting(@"PackagerType", 0);
+    
     UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
     UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
     UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
@@ -369,6 +435,9 @@ void wannaSliceOfMe() {
 }
 
 - (IBAction)Zebra_Button:(UIButton *)sender {
+    
+    saveCustomSetting(@"PackagerType", 1);
+    
     //color var
     UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
     UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
@@ -386,6 +455,9 @@ void wannaSliceOfMe() {
 }
 
 - (IBAction)Sileo_Button:(UIButton *)sender {
+    
+    saveCustomSetting(@"PackagerType", 2);
+    
     UIColor *purple = [UIColor colorWithRed:0.48 green:0.44 blue:0.83 alpha:1.0];
     UIColor *white = [UIColor colorWithRed:1.00 green:1.00 blue:1.00 alpha:1.0];;
     UIColor *black = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];;
@@ -400,15 +472,24 @@ void wannaSliceOfMe() {
     [self.Sileo_Outlet setTitleColor:black forState:UIControlStateNormal];
 }
 - (IBAction)Restore_FS_Switch_Action:(UISwitch *)sender {
-    if (self.restoreFSSwitch.on == YES)
+    if ([sender isOn])
     {
-        restore_fs = true;
-        [self.buttontext setTitle:[NSString stringWithFormat:@"Restore RootFS"] forState:UIControlStateNormal];
-        self.loadTweakSwitch.on = NO;
+        saveCustomSetting(@"RestoreFS", 0);
     } else {
-        restore_fs = false;
+        saveCustomSetting(@"RestoreFS", 1);
     }
 }
+
+- (IBAction)loadTweaksPushed:(id)sender {
+    if ([sender isOn])
+    {
+        saveCustomSetting(@"LoadTweaks", 0);
+    } else {
+        saveCustomSetting(@"LoadTweaks", 1);
+    }
+    
+}
+
 
 - (IBAction)dismissSwipe:(UISwipeGestureRecognizer *)sender {
     

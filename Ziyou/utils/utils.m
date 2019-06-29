@@ -51,6 +51,64 @@
 #import "machswap2.h"
 #include "SVProgressHUD.h"
 
+void initSettingsIfNotExist()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    if ([defaults objectForKey:@"ExploitType"] == nil)
+    {
+        [defaults setInteger:0 forKey:@"ExploitType"];
+        [defaults setInteger:0 forKey:@"PackagerType"];
+        [defaults setInteger:0 forKey:@"LoadTweaks"];
+        [defaults setInteger:1 forKey:@"RestoreFS"];
+        [defaults synchronize];
+    }
+}
+
+void saveCustomSetting(NSString *setting, int settingResult)
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setInteger:settingResult forKey:setting];
+}
+
+BOOL shouldLoadTweaks()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults integerForKey:@"LoadTweaks"] == 0)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+int getExploitType()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return (int)[defaults integerForKey:@"ExploitType"];
+}
+
+int getPackagerType()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return (int)[defaults integerForKey:@"PackagerType"];
+}
+
+BOOL shouldRestoreFS()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults integerForKey:@"RestoreFS"] == 0)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+
+
 void runMachswap() {
     
     offsets_t *ms_offs = get_machswap_offsets();
@@ -124,15 +182,15 @@ uint64_t getKBASE() {
     return 0;
 }
 
-void runVoucherSwap(){
+void runVoucherSwap() {
     voucher_swap();
     
     tfp0 = kernel_task_port;
     
     if (MACH_PORT_VALID(tfp0))
     {
-        kernel_slide_init();
-        kbase = (kernel_slide - KADD_SEARCH);
+        kbase = getKBASE();
+        kernel_slide = (kbase - KADD_SEARCH);
         
         rootMe(0, selfproc());
         unsandbox(selfproc());
@@ -326,37 +384,6 @@ void set_csflags(uint64_t proc) {
 
 
 
-void patchShenanigans()
-{
-    kptr_t const shenPatch = 0xca13feba37be;
-    uint64_t myProc = get_proc_struct_for_pid(getpid());
-    //KERN CRED
-    kptr_t const kernel_proc_struct_addr = ReadKernel64(ReadKernel64(GETOFFSET(kernel_task)) + koffset(KSTRUCT_OFFSET_TASK_BSD_INFO));
-    uint64_t kern_cred_addr = ReadKernel64(kernel_proc_struct_addr + koffset(KSTRUCT_OFFSET_PROC_UCRED));
-    
-    kptr_t Shenanigans = ReadKernel64(GETOFFSET(shenanigans));
-    
-    if (Shenanigans != kern_cred_addr)
-    {
-        Shenanigans = kern_cred_addr;
-    }
-    WriteKernel64(GETOFFSET(shenanigans), shenPatch);
-    
-    kptr_t const myProcAddr = kern_cred_addr;
-    give_creds_to_process_at_addr(myProcAddr, kern_cred_addr);
-    
-    
-    setuid(0);
-    setgid(0);
-    
-    //PLATFORMIZE
-    set_tfplatform(myProc);
-    //CSFLAGS
-    set_csflags(myProc);
-    
-}
-
-
 void saveOffs() {
     
     _assert(chdir("/ziyou") == ERR_SUCCESS, @"Failed to create jailbreak directory.", true);
@@ -520,10 +547,6 @@ void getOffsets() {
     
     //We got offsets.
     found_offs = true;
-    if (A12 == 1)
-    {
-        patchShenanigans();
-    }
     term_kernel();
 }
 
@@ -1012,6 +1035,7 @@ void remountFS(bool shouldRestore) {
     if (shouldRestore)
     {
         restoreRootFS();
+        saveCustomSetting(@"RestoreFS", 1);
     }
     
 }
@@ -1142,6 +1166,16 @@ bool ensure_file(const char *file, int owner, mode_t mode) {
                                                                NSFileGroupOwnerAccountID: @(owner),
                                                                NSFilePosixPermissions: @(mode)
                                                                }];
+}
+
+bool doesFileExist(NSString *fileName)
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileName])
+    {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void removeFileIfExists(const char *fileToRemove)
@@ -1601,86 +1635,166 @@ void kickMe()
     sleep(3);
 }
 
-void initInstall()
+
+void installCydia()
+{
+    //Initial Resources
+    [SVProgressHUD showWithStatus:@"Extracting Resources"];
+    extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+    fixFS();
+    
+    //Firmware Package
+    [SVProgressHUD showWithStatus:@"Configuring Firmware Package"];
+    systemCmd("/usr/libexec/cydia/firmware.sh");
+    
+    //Jailbreakd, Pspawn, Amfid
+    [SVProgressHUD showWithStatus:@"Extracting Resources"];
+    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+    
+    //Start all the payloads
+    kickMe();
+    
+    //Run DPKG on itself and readline is needed
+    [SVProgressHUD showWithStatus:@"Running DPKG"];
+    installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+    installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+    
+    //PRE-DEPENDS
+    installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+    installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+    installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+    installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+    installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+    installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+    installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+    
+    
+    
+    //Idk why we need to do this bullshit.
+    for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+    {
+        if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg isEqual: @"xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+        {
+            installDeb([get_debian_file(pkg) UTF8String], true);
+        }
+    }
+    
+    createLocalRepo();
+    
+    if (!doesFileExist(@"/.ziyou_bootstrap"))
+    {
+        createFile("/.ziyou_bootstrap", 0, 0644);
+        showMSG(NSLocalizedString(@"Bootstrap Extracted! We are going to reboot your device. You will need to run me again.", nil), 1, 1);
+        reboot(RB_QUICK);
+    } else {
+        runApt(@[@"update"]);
+        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"]
+                arrayByAddingObjectsFromArray:@[@"--reinstall", @"cydia"]]);
+        ensure_file("/.ziyou_installed", 0, 0644);
+        execCmd("/usr/bin/uicache", NULL);
+    }
+}
+
+
+
+
+
+void installZebra()
+{
+    
+    //Initial Resources
+    [SVProgressHUD showWithStatus:@"Extracting Resources"];
+    extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+    fixFS();
+    
+    //Firmware Package
+    [SVProgressHUD showWithStatus:@"Configuring Firmware Package"];
+    systemCmd("/usr/libexec/cydia/firmware.sh");
+    
+    //Jailbreakd, Pspawn, Amfid
+    [SVProgressHUD showWithStatus:@"Extracting Resources"];
+    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+    
+    //Start all the payloads
+    kickMe();
+    
+    //Run DPKG on itself and readline is needed
+    [SVProgressHUD showWithStatus:@"Running DPKG"];
+    installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+    installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+    
+    //PRE-DEPENDS
+    installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+    installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+    installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+    installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+    installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+    installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+    installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+    
+    
+    removeFileIfExists("/Applications/Cydia.app"); //Zebra
+    
+    
+    //Idk why we need to do this bullshit.
+    for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+    {
+        if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"]  && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+        {
+            installDeb([get_debian_file(pkg) UTF8String], true);
+        }
+    }
+    
+    createLocalRepo();
+    
+    if (!doesFileExist(@"/.ziyou_bootstrap"))
+    {
+        createFile("/.ziyou_bootstrap", 0, 0644);
+        showMSG(NSLocalizedString(@"Bootstrap Extracted! We are going to reboot your device. You will need to run me again.", nil), 1, 1);
+        reboot(RB_QUICK);
+    } else {
+        runApt(@[@"update"]);
+        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"]
+                arrayByAddingObjectsFromArray:@[@"--reinstall", @"xyz.willy.zebra"]]);
+        ensure_file("/.ziyou_installed", 0, 0644);
+        execCmd("/usr/bin/uicache", NULL);
+    }
+}
+
+
+
+
+void updatePayloads()
+{
+    [SVProgressHUD showWithStatus:@"Updating Payloads"];
+    //Backup Tweaks
+    removeFileIfExists("/usr/lib/TweakInject.bak");
+    copyMe("/usr/lib/TweakInject", "/usr/lib/TweakInject.bak");
+    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+    removeFileIfExists("/usr/lib/TweakInject");
+    copyMe("/usr/lib/TweakInject.bak", "/usr/lib/TweakInject");
+    kickMe();
+}
+
+void initInstall(int packagerType)
 {
     
     int f = open("/.ziyou_installed", O_RDONLY);
     if (f == -1)
     {
-        bool wtfWhyDoIneedThis = false;
+       
+       if (packagerType == 0)
+       {
+           installCydia();
+       } else if (packagerType == 1)
+       {
+           installZebra();
+       } else {
+           NSLog(@"IM NOT DONE! GTFO");
+       }
         
-        int fOWO = open("/.ziyou_bootstrap", O_RDONLY);
-        if (fOWO == -1)
-        {
-            wtfWhyDoIneedThis = true;
-        } else {
-            wtfWhyDoIneedThis = false;
-        }
-        
-        //Initial Resources
-        [SVProgressHUD showWithStatus:@"Extracting Resources"];
-        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
-        fixFS();
-        
-        //Firmware Package
-        [SVProgressHUD showWithStatus:@"Configuring Firmware Package"];
-        systemCmd("/usr/libexec/cydia/firmware.sh");
-        
-        //Jailbreakd, Pspawn, Amfid
-        [SVProgressHUD showWithStatus:@"Extracting Resources"];
-        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
-        
-        //Start all the payloads
-        kickMe();
-        
-        //Run DPKG on itself and readline is needed
-        [SVProgressHUD showWithStatus:@"Running DPKG"];
-        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
-        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
-        
-        //PRE-DEPENDS
-        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
-        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
-        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
-        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
-        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
-        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
-        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
-        
-        
-        
-        //Idk why we need to do this bullshit.
-        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
-        {
-            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
-            {
-                installDeb([get_debian_file(pkg) UTF8String], true);
-            }
-        }
-        
-        createLocalRepo();
-        
-        if (wtfWhyDoIneedThis)
-        {
-            ensure_file("/.ziyou_bootstrap", 0, 0644);
-            showMSG(NSLocalizedString(@"Bootstrap Extracted! We are going to reboot your device. You will need to run me again.", nil), 1, 1);
-            reboot(RB_QUICK);
-        } else {
-            runApt(@[@"update"]);
-            runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"]
-                    arrayByAddingObjectsFromArray:@[@"--reinstall", @"cydia"]]);
-            ensure_file("/.ziyou_installed", 0, 0644);
-            execCmd("/usr/bin/uicache", NULL);
-        }
     } else {
-        [SVProgressHUD showWithStatus:@"Updating Payloads"];
-        //Backup Tweaks
-        removeFileIfExists("/usr/lib/TweakInject.bak");
-        copyMe("/usr/lib/TweakInject", "/usr/lib/TweakInject.bak");
-        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
-        removeFileIfExists("/usr/lib/TweakInject");
-        copyMe("/usr/lib/TweakInject.bak", "/usr/lib/TweakInject");
-        kickMe();
+        updatePayloads();
     }
 }
 

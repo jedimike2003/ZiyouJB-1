@@ -363,13 +363,16 @@
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eTb-G4-W4Y">
                                                         <rect key="frame" x="0.0" y="0.0" width="137" height="124"/>
                                                         <subviews>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dBn-W7-HWD">
-                                                                <rect key="frame" x="44" y="83" width="51" height="31"/>
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dBn-W7-HWD">
+                                                                <rect key="frame" x="44" y="82" width="51" height="31"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="31" id="9dD-X0-BBt"/>
                                                                     <constraint firstAttribute="width" constant="49" id="cfR-tZ-Woz"/>
                                                                 </constraints>
                                                                 <color key="onTintColor" red="0.47843137250000001" green="0.43921568630000002" blue="0.83137254900000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                <connections>
+                                                                    <action selector="loadTweaksPushed:" destination="cbb-OQ-T38" eventType="valueChanged" id="sb2-XN-foV"/>
+                                                                </connections>
                                                             </switch>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tweaks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aa3-87-qim">
                                                                 <rect key="frame" x="42" y="10" width="53" height="18"/>
@@ -425,7 +428,7 @@ Jailbroken</string>
                                                                 </constraints>
                                                                 <color key="onTintColor" red="0.47843137250000001" green="0.43921568630000002" blue="0.83137254900000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <connections>
-                                                                    <action selector="Restore_FS_Switch_Action:" destination="cbb-OQ-T38" eventType="valueChanged" id="fiV-NQ-4EJ"/>
+                                                                    <action selector="Restore_FS_Switch_Action:" destination="cbb-OQ-T38" eventType="valueChanged" id="vq3-HU-fBi"/>
                                                                 </connections>
                                                             </switch>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Restore RootFS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kup-ex-n4C">

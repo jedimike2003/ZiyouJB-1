@@ -814,7 +814,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 7G855XENJD;
+				DEVELOPMENT_TEAM = 95MPSDK9P6;
 				INFOPLIST_FILE = Ziyou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -826,7 +826,7 @@
 					IOKit,
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.maxbridgland.Ziyou;
+				PRODUCT_BUNDLE_IDENTIFIER = team.ziyou.ziyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e";
@@ -839,7 +839,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 7G855XENJD;
+				DEVELOPMENT_TEAM = 95MPSDK9P6;
 				INFOPLIST_FILE = Ziyou/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -851,7 +851,7 @@
 					IOKit,
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.maxbridgland.Ziyou;
+				PRODUCT_BUNDLE_IDENTIFIER = team.ziyou.ziyou;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "arm64 arm64e";

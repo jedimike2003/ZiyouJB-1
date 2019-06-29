@@ -1051,6 +1051,22 @@ Section: Administration
 Priority: required
 Description: iostat, login, passwd, sync, sysctl
 
+Package: system-memory-reset-fix
+Version: 1.0
+Architecture: iphoneos-arm
+Maintainer: Pwn20wnd
+Installed-Size: 56
+Depends: mobilesubstrate
+Filename: ./system-memory-reset-fix_1.0_iphoneos-arm.deb
+Size: 1888
+MD5sum: cf5d152ef813a52c57bfb4e7bc64ad5c
+SHA1: e5be957cc57267c754cfdf12f694e245e78623b0
+SHA256: 340f052351a83874fd44b999704ac0c1a5b32538388eeb6dad123bee250e0ae4
+Section: System
+Description: Prevent overnight userspace reboots triggered by mmaintenanced
+Author: Pwn20wnd
+Name: System Memory Reset Fix
+
 Package: tar
 Version: 1.30-2
 Architecture: iphoneos-arm
@@ -1121,6 +1137,24 @@ SHA256: 08d844ac64be7bedb9d31e4a1be96ac34e97a7cdf447d7fdb0a22944db421d99
 Section: Networking
 Priority: important
 Description: simple HTTP file transfer client
+
+Package: xyz.willy.zebra
+Version: 1.0~beta15
+Architecture: iphoneos-arm
+Maintainer: Wilson Styres <wilson@styres.me>
+Installed-Size: 15120
+Depends: dpkg
+Filename: ./xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb
+Size: 4441144
+MD5sum: 518ddefc93e92b56d920c79287c59997
+SHA1: c53f70f02f5b23187ca4bbd8e712fac8b0048c28
+SHA256: 9959d561313c9c118689295463cc9ca405049681591a4ef64cded7afa2dfb06d
+Section: Packaging
+Description: A Useful Package Manager
+Tag: purpose::x
+Author: Wilson Styres <wilson@styres.me>
+Depiction: https://xtm3x.github.io/repo/depictions/xyz.willy.zebra/
+Name: Zebra (BETA)
 
 Package: xz
 Version: 5.2.4-4

@@ -35,8 +35,16 @@ void xpcFucker(void);
 void finish(bool shouldLoadTweaks);
 void runVoucherSwap(void);
 void runExploit(int expType);
-void initInstall(void);
+void initInstall(int packagerType);
 bool canRead(const char *file);
 struct tfp0;
+
+//SETTINGS
+BOOL shouldLoadTweaks(void);
+int getExploitType(void);
+int getPackagerType(void);
+void initSettingsIfNotExist(void);
+void saveCustomSetting(NSString *setting, int settingResult);
+BOOL shouldRestoreFS(void);
 
 #endif /* utils_h */
