@@ -1770,6 +1770,7 @@ void updatePayloads()
     //Backup Tweaks
     removeFileIfExists("/usr/lib/TweakInject.bak");
     copyMe("/usr/lib/TweakInject", "/usr/lib/TweakInject.bak");
+    removeFileIfExists("/usr/bin/sbreload");
     extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
     removeFileIfExists("/usr/lib/TweakInject");
     copyMe("/usr/lib/TweakInject.bak", "/usr/lib/TweakInject");
@@ -1810,6 +1811,10 @@ void finish(bool shouldLoadTweaks)
     
     removeFileIfExists("/bin/launchctl");
     copyMe("/ziyou/launchctl", "/bin/launchctl");
+    
+    
+    systemCmd("chmod +x /usr/bin/sbreload");
+    systemCmd("chown 0:0 /usr/bin/sbreload");
     
     if (shouldLoadTweaks)
     {
