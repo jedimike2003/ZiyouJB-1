@@ -51,7 +51,7 @@
     {
       "size" : "57x57",
       "idiom" : "iphone",
-      "filename" : "Icon-115.png",
+      "filename" : "Icon-114.png",
       "scale" : "2x"
     },
     {
@@ -141,7 +141,7 @@
     {
       "size" : "83.5x83.5",
       "idiom" : "ipad",
-      "filename" : "Icon-82.png",
+      "filename" : "Icon-167.png",
       "scale" : "2x"
     },
     {
@@ -153,7 +153,6 @@
     {
       "size" : "24x24",
       "idiom" : "watch",
-      "filename" : "watch.png",
       "scale" : "2x",
       "role" : "notificationCenter",
       "subtype" : "38mm"
@@ -161,7 +160,6 @@
     {
       "size" : "27.5x27.5",
       "idiom" : "watch",
-      "filename" : "watch.png",
       "scale" : "2x",
       "role" : "notificationCenter",
       "subtype" : "42mm"
@@ -169,21 +167,18 @@
     {
       "size" : "29x29",
       "idiom" : "watch",
-      "filename" : "58.png",
       "role" : "companionSettings",
       "scale" : "2x"
     },
     {
       "size" : "29x29",
       "idiom" : "watch",
-      "filename" : "87.png",
       "role" : "companionSettings",
       "scale" : "3x"
     },
     {
       "size" : "40x40",
       "idiom" : "watch",
-      "filename" : "watch.png",
       "scale" : "2x",
       "role" : "appLauncher",
       "subtype" : "38mm"
@@ -205,7 +200,6 @@
     {
       "size" : "86x86",
       "idiom" : "watch",
-      "filename" : "watch.png",
       "scale" : "2x",
       "role" : "quickLook",
       "subtype" : "38mm"
@@ -213,7 +207,6 @@
     {
       "size" : "98x98",
       "idiom" : "watch",
-      "filename" : "watch.png",
       "scale" : "2x",
       "role" : "quickLook",
       "subtype" : "42mm"
@@ -226,92 +219,59 @@
       "subtype" : "44mm"
     },
     {
-      "size" : "1024x1024",
       "idiom" : "watch-marketing",
-      "filename" : "1024.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "16x16",
-      "idiom" : "mac",
-      "filename" : "16.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "16x16",
-      "idiom" : "mac",
-      "filename" : "32.png",
-      "scale" : "2x"
-    },
-    {
-      "size" : "32x32",
-      "idiom" : "mac",
-      "filename" : "32.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "32x32",
-      "idiom" : "mac",
-      "filename" : "64.png",
-      "scale" : "2x"
-    },
-    {
-      "size" : "128x128",
-      "idiom" : "mac",
-      "filename" : "128.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "128x128",
-      "idiom" : "mac",
-      "filename" : "256.png",
-      "scale" : "2x"
-    },
-    {
-      "size" : "256x256",
-      "idiom" : "mac",
-      "filename" : "256.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "256x256",
-      "idiom" : "mac",
-      "filename" : "512.png",
-      "scale" : "2x"
-    },
-    {
-      "size" : "512x512",
-      "idiom" : "mac",
-      "filename" : "512.png",
-      "scale" : "1x"
-    },
-    {
-      "size" : "512x512",
-      "idiom" : "mac",
-      "filename" : "1024.png",
-      "scale" : "2x"
-    },
-    {
-      "size" : "44x44",
-      "idiom" : "watch",
-      "filename" : "watch.png",
-      "scale" : "2x",
-      "role" : "longLook",
-      "subtype" : "42mm"
-    },
-    {
       "size" : "1024x1024",
-      "idiom" : "ios-marketing",
-      "filename" : "1024.png",
-      "unassigned" : true,
       "scale" : "1x"
     },
     {
-      "size" : "1024x1024",
-      "idiom" : "ios-marketing",
-      "filename" : "1024.png",
-      "unassigned" : true,
+      "idiom" : "mac",
+      "size" : "16x16",
       "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "16x16",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "32x32",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "32x32",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "128x128",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "128x128",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "256x256",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "256x256",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "512x512",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "mac",
+      "size" : "512x512",
+      "scale" : "2x"
     }
   ],
   "info" : {
