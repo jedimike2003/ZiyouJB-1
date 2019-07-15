@@ -1,9 +1,9 @@
 //
 //  bypass.h
-//  Slice
+//  Ziyou
 //
 //  Created by Tanay Findley on 5/19/19.
-//  Copyright © 2019 Slice Team. All rights reserved.
+//  Copyright © 2019 Ziyou Team. All rights reserved.
 //
 
 #ifndef bypass_h
