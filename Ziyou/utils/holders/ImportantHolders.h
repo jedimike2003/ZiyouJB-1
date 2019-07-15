@@ -19,4 +19,6 @@ extern uint64_t ktask;
 
 void setA12(uint a12);
 
+void set_tfp0(mach_port_t tfp0wo);
+
 #endif /* ImportantHolders_h */

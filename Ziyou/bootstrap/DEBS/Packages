@@ -783,6 +783,24 @@ Homepage: http://tukaani.org/lzma/
 Description: slower, but better, compression algorithm
 Name: LZMA Utils
 
+Package: me.apptapp.installer
+Version: 5.0b3
+Architecture: iphoneos-arm
+Maintainer: AppTapp <support@apptapp.me>
+Depends: firmware (>= 9.0)
+Filename: ./installer.deb
+Size: 23651258
+MD5sum: 290775b0cb4247af2e8d7935144f8b04
+SHA1: b2457613c62d7f4f0426577e868cb181c48ee12a
+SHA256: 01bf6747732a37c9a866d1e8b1a2f5634478352261fbdd183278bdd636679ff9
+Section: Packaging
+Description: A modern package manager built specifically for iOS!
+Author: AppTapp <support@apptapp.me>
+Depiction: https://synnygr.dev/AppTapp/installer.html
+Icon: https://synnygr.dev/AppTapp/installer_icon.png
+Name: Installer
+Sileodepiction: https://apptapp.me/repo/installer.json
+
 Package: me.chr0nict.comex.substitute
 Version: 1.0
 Architecture: iphoneos-arm
@@ -812,6 +830,22 @@ Section: Utilities
 Description: A tool to inject tweaks.
 Author: Tanay Findley <@Chr0nicT>
 Name: TweakInject
+
+Package: mmaintenanced-reback
+Version: 1.0-1+debug
+Architecture: iphoneos-arm
+Maintainer: Tanay Findley
+Installed-Size: 104
+Depends: mobilesubstrate
+Filename: ./mmaintenanced-reback_1.0-1+debug_iphoneos-arm.deb
+Size: 2994
+MD5sum: 33cdfbf860bebf4d58752ca166987d45
+SHA1: ed19111a684f77c420f5597a9bf636fe20272171
+SHA256: b4cac92b3bb3d4af84440cc83102144bfbd137b96212bf3b73693059f50aa462
+Section: System
+Description: Hooks mmaintenanced to *not* fully reboot while memory is exhausted.
+Author: Tanay Findley
+Name: mmaintenanced Fix
 
 Package: mobilesubstrate
 Version: 99.0
@@ -1051,22 +1085,6 @@ Section: Administration
 Priority: required
 Description: iostat, login, passwd, sync, sysctl
 
-Package: system-memory-reset-fix
-Version: 1.0
-Architecture: iphoneos-arm
-Maintainer: Pwn20wnd
-Installed-Size: 56
-Depends: mobilesubstrate
-Filename: ./system-memory-reset-fix_1.0_iphoneos-arm.deb
-Size: 1888
-MD5sum: cf5d152ef813a52c57bfb4e7bc64ad5c
-SHA1: e5be957cc57267c754cfdf12f694e245e78623b0
-SHA256: 340f052351a83874fd44b999704ac0c1a5b32538388eeb6dad123bee250e0ae4
-Section: System
-Description: Prevent overnight userspace reboots triggered by mmaintenanced
-Author: Pwn20wnd
-Name: System Memory Reset Fix
-
 Package: tar
 Version: 1.30-2
 Architecture: iphoneos-arm
@@ -1105,16 +1123,15 @@ Author: Sam Bingner <maintainer@sbdhi.com>
 Name: Trust Cache Injector
 
 Package: uikittools
-Version: 1.1.13-5
+Version: 99.9.1
 Architecture: iphoneos-arm
-Maintainer: Sam Bingner <maintainer@sbdhi.com>
-Installed-Size: 1064
+Maintainer: Tanay Findley (@Chr0nicT)
 Depends: coreutils-bin
 Filename: ./uikit.deb
-Size: 24894
-MD5sum: 40a82f80b29036decf380d6519b35c8a
-SHA1: 1a68695b482831fce32ce6f8326beaea4fa6d330
-SHA256: 4410adcfe376b62467ee0ae68227885021c12852b17f33a384e699e8fd83f009
+Size: 20868
+MD5sum: 0f6b7bf3f8102cb5029236eaa34140c8
+SHA1: 40bef757f8b574ebc4262de1c0e4da9910374f55
+SHA256: 6bd84acca10031b5db5b6f90fc3db38e1712274c8a5b9533024f0f04c5c106aa
 Section: Utilities
 Priority: optional
 Homepage: http://tukaani.org/lzma/

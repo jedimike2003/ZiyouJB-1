@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		30B076F9B59B0E4B40A8DBB5 /* libPods-Ziyou.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B579F8955712B6439B2A645F /* libPods-Ziyou.a */; };
 		8850DDEA229AF1E000D18B83 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8850DDE9229AF1E000D18B83 /* LaunchScreen.storyboard */; };
 		88E01545228B629A00F9E519 /* voucher_swap.c in Sources */ = {isa = PBXBuildFile; fileRef = 88E01537228B629A00F9E519 /* voucher_swap.c */; };
 		88EFC47722836924005FA5BB /* utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EFC47622836924005FA5BB /* utils.m */; };
@@ -30,6 +29,7 @@
 		B8346CDD2283BA2F009F6311 /* PFOffs.c in Sources */ = {isa = PBXBuildFile; fileRef = B8346CDB2283BA2F009F6311 /* PFOffs.c */; };
 		B8346CE02283BA69009F6311 /* kernel_exec.m in Sources */ = {isa = PBXBuildFile; fileRef = B8346CDE2283BA69009F6311 /* kernel_exec.m */; };
 		B8346CE42283BE99009F6311 /* lzssdec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B8346CE22283BE99009F6311 /* lzssdec.cpp */; };
+		B862F49F22C8261F003B79E6 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B862F49E22C8261F003B79E6 /* SettingsViewController.m */; };
 		B866F3CE228B7A7200616377 /* machswap2.m in Sources */ = {isa = PBXBuildFile; fileRef = B866F3CC228B7A7200616377 /* machswap2.m */; };
 		B88347192284DBCE00DBA046 /* vnode_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B88347182284DBCE00DBA046 /* vnode_utils.m */; };
 		B883471E2284DC7300DBA046 /* libsnappy.c in Sources */ = {isa = PBXBuildFile; fileRef = B883471C2284DC7300DBA046 /* libsnappy.c */; };
@@ -60,7 +60,18 @@
 		B8C0B80A228385DA0030AE1E /* ImportantHolders.c in Sources */ = {isa = PBXBuildFile; fileRef = B8C0B808228385DA0030AE1E /* ImportantHolders.c */; };
 		B8C4ECE822920715008F9068 /* bypass.m in Sources */ = {isa = PBXBuildFile; fileRef = B8C4ECE622920715008F9068 /* bypass.m */; };
 		B8C4ECEF22920824008F9068 /* OSObj.c in Sources */ = {isa = PBXBuildFile; fileRef = B8C4ECED22920824008F9068 /* OSObj.c */; };
+		B8C7055722D7CF4C00DA550D /* iosurface.c in Sources */ = {isa = PBXBuildFile; fileRef = B8C7055522D7CF4C00DA550D /* iosurface.c */; };
+		B8C7055B22D7D02700DA550D /* exploit.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7055922D7D02700DA550D /* exploit.cc */; };
+		B8C7055F22D7D04900DA550D /* pipe.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7055D22D7D04900DA550D /* pipe.cc */; };
+		B8C7056222D7D06600DA550D /* stage1.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056022D7D06600DA550D /* stage1.cc */; };
+		B8C7056522D7D08500DA550D /* dangling_options.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056322D7D08500DA550D /* dangling_options.cc */; };
+		B8C7056822D7D0A100DA550D /* spray.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056622D7D0A100DA550D /* spray.cc */; };
+		B8C7056B22D7D0BD00DA550D /* port.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056922D7D0BD00DA550D /* port.cc */; };
+		B8C7057422D7D2FE00DA550D /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7057222D7D2FE00DA550D /* util.cc */; };
+		B8C7057722D7D4CA00DA550D /* runSockPuppet.mm in Sources */ = {isa = PBXBuildFile; fileRef = B8C7057522D7D4CA00DA550D /* runSockPuppet.mm */; };
+		B8D6CFF022D8DCC800437880 /* shenanigans.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D6CFEE22D8DCC800437880 /* shenanigans.m */; };
 		B8E8A9BA22891CE00049F87D /* insert_dylib.c in Sources */ = {isa = PBXBuildFile; fileRef = B8E8A9B822891CE00049F87D /* insert_dylib.c */; };
+		B8F2CF9022DBA25000BEB355 /* unlocknvram.c in Sources */ = {isa = PBXBuildFile; fileRef = B8F2CF8E22DBA25000BEB355 /* unlocknvram.c */; };
 		B8FB44EE2284F34A00CEDF47 /* amfi_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B8FB44ED2284F34A00CEDF47 /* amfi_utils.m */; };
 		B8FB44F22284F3F700CEDF47 /* libmis.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B8FB44F12284F3F700CEDF47 /* libmis.tbd */; };
 		B8FB44F62284F6F200CEDF47 /* ArchiveFile.m in Sources */ = {isa = PBXBuildFile; fileRef = B8FB44F42284F6F200CEDF47 /* ArchiveFile.m */; };
@@ -69,7 +80,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ziyou.debug.xcconfig"; path = "Target Support Files/Pods-Ziyou/Pods-Ziyou.debug.xcconfig"; sourceTree = "<group>"; };
 		8850DDE9229AF1E000D18B83 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		888DFDA9229D9E9B004F4F6F /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		88E01537228B629A00F9E519 /* voucher_swap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = voucher_swap.c; sourceTree = "<group>"; };
@@ -91,8 +101,6 @@
 		901F1E8B22B6B5FC00D9A390 /* SF-Pro-Rounded-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Thin.otf"; path = "Artwork/Fonts/SF-Pro-Rounded-Thin.otf"; sourceTree = SOURCE_ROOT; };
 		901F1E8C22B6B5FC00D9A390 /* SF-Pro-Display-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Display-Thin.otf"; path = "Artwork/Fonts/SF-Pro-Display-Thin.otf"; sourceTree = SOURCE_ROOT; };
 		901F1E8D22B6B5FD00D9A390 /* SF-Pro-Display-UltralightItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Display-UltralightItalic.otf"; path = "Artwork/Fonts/SF-Pro-Display-UltralightItalic.otf"; sourceTree = SOURCE_ROOT; };
-		B579F8955712B6439B2A645F /* libPods-Ziyou.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Ziyou.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ziyou.release.xcconfig"; path = "Target Support Files/Pods-Ziyou/Pods-Ziyou.release.xcconfig"; sourceTree = "<group>"; };
 		B8268668228760C90062035C /* bootstrap */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bootstrap; sourceTree = "<group>"; };
 		B8346CD72283B975009F6311 /* remap_tfp_set_hsp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = remap_tfp_set_hsp.c; sourceTree = "<group>"; };
 		B8346CD82283B975009F6311 /* remap_tfp_set_hsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = remap_tfp_set_hsp.h; sourceTree = "<group>"; };
@@ -102,6 +110,8 @@
 		B8346CDF2283BA69009F6311 /* kernel_exec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kernel_exec.h; sourceTree = "<group>"; };
 		B8346CE22283BE99009F6311 /* lzssdec.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = lzssdec.cpp; sourceTree = "<group>"; };
 		B8346CE32283BE99009F6311 /* lzssdec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lzssdec.h; sourceTree = "<group>"; };
+		B862F49D22C8261F003B79E6 /* SettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		B862F49E22C8261F003B79E6 /* SettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		B866F3CC228B7A7200616377 /* machswap2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = machswap2.m; sourceTree = "<group>"; };
 		B866F3CD228B7A7200616377 /* machswap2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = machswap2.h; sourceTree = "<group>"; };
 		B88347182284DBCE00DBA046 /* vnode_utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = vnode_utils.m; sourceTree = "<group>"; };
@@ -169,6 +179,27 @@
 		B8C4ECE92292074D008F9068 /* cs_blob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cs_blob.h; sourceTree = "<group>"; };
 		B8C4ECED22920824008F9068 /* OSObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = OSObj.c; sourceTree = "<group>"; };
 		B8C4ECEE22920824008F9068 /* OSObj.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSObj.h; sourceTree = "<group>"; };
+		B8C7055522D7CF4C00DA550D /* iosurface.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = iosurface.c; sourceTree = "<group>"; };
+		B8C7055622D7CF4C00DA550D /* iosurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iosurface.h; sourceTree = "<group>"; };
+		B8C7055822D7CF7700DA550D /* OSUnserializeBinary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSUnserializeBinary.h; sourceTree = "<group>"; };
+		B8C7055922D7D02700DA550D /* exploit.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = exploit.cc; sourceTree = "<group>"; };
+		B8C7055A22D7D02700DA550D /* exploit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exploit.h; sourceTree = "<group>"; };
+		B8C7055D22D7D04900DA550D /* pipe.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pipe.cc; sourceTree = "<group>"; };
+		B8C7055E22D7D04900DA550D /* pipe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pipe.h; sourceTree = "<group>"; };
+		B8C7056022D7D06600DA550D /* stage1.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stage1.cc; sourceTree = "<group>"; };
+		B8C7056122D7D06600DA550D /* stage1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stage1.h; sourceTree = "<group>"; };
+		B8C7056322D7D08500DA550D /* dangling_options.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dangling_options.cc; sourceTree = "<group>"; };
+		B8C7056422D7D08500DA550D /* dangling_options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dangling_options.h; sourceTree = "<group>"; };
+		B8C7056622D7D0A100DA550D /* spray.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = spray.cc; sourceTree = "<group>"; };
+		B8C7056722D7D0A100DA550D /* spray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spray.h; sourceTree = "<group>"; };
+		B8C7056922D7D0BD00DA550D /* port.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = port.cc; sourceTree = "<group>"; };
+		B8C7056A22D7D0BD00DA550D /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
+		B8C7057222D7D2FE00DA550D /* util.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = util.cc; sourceTree = "<group>"; };
+		B8C7057322D7D2FE00DA550D /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		B8C7057522D7D4CA00DA550D /* runSockPuppet.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = runSockPuppet.mm; sourceTree = "<group>"; };
+		B8C7057622D7D4CA00DA550D /* runSockPuppet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runSockPuppet.h; sourceTree = "<group>"; };
+		B8D6CFEE22D8DCC800437880 /* shenanigans.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = shenanigans.m; sourceTree = "<group>"; };
+		B8D6CFEF22D8DCC800437880 /* shenanigans.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shenanigans.h; sourceTree = "<group>"; };
 		B8E8A9B822891CE00049F87D /* insert_dylib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = insert_dylib.c; sourceTree = "<group>"; };
 		B8E8A9B922891CE00049F87D /* insert_dylib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = insert_dylib.h; sourceTree = "<group>"; };
 		B8E8A9BB22891DFD0049F87D /* kernel_structs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kernel_structs.h; sourceTree = "<group>"; };
@@ -176,6 +207,9 @@
 		B8E8A9BD228923BC0049F87D /* proc_info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = proc_info.h; sourceTree = "<group>"; };
 		B8E8A9BE228923DE0049F87D /* kern_control.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kern_control.h; sourceTree = "<group>"; };
 		B8E8A9BF228923F00049F87D /* route.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = route.h; sourceTree = "<group>"; };
+		B8F2CF8E22DBA25000BEB355 /* unlocknvram.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = unlocknvram.c; sourceTree = "<group>"; };
+		B8F2CF8F22DBA25000BEB355 /* unlocknvram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unlocknvram.h; sourceTree = "<group>"; };
+		B8F2CF9122DBADD400BEB355 /* mac_policy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mac_policy.h; sourceTree = "<group>"; };
 		B8FB44ED2284F34A00CEDF47 /* amfi_utils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = amfi_utils.m; sourceTree = "<group>"; };
 		B8FB44EF2284F35A00CEDF47 /* amfi_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = amfi_utils.h; sourceTree = "<group>"; };
 		B8FB44F02284F3A200CEDF47 /* CSCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSCommon.h; sourceTree = "<group>"; };
@@ -197,22 +231,12 @@
 				B8FB44FB2284F76100CEDF47 /* libarchive.tbd in Frameworks */,
 				B8FB44F22284F3F700CEDF47 /* libmis.tbd in Frameworks */,
 				88EFC47B228369E8005FA5BB /* IOKit.framework in Frameworks */,
-				30B076F9B59B0E4B40A8DBB5 /* libPods-Ziyou.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7E5ADF0E333DC2AF91F6A3A1 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */,
-				B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		88E0151E228B629A00F9E519 /* voucher_swap */ = {
 			isa = PBXGroup;
 			children = (
@@ -229,7 +253,6 @@
 				B8FB44F72284F70A00CEDF47 /* libarchive.tbd */,
 				B8FB44F12284F3F700CEDF47 /* libmis.tbd */,
 				88EFC47A228369E8005FA5BB /* IOKit.framework */,
-				B579F8955712B6439B2A645F /* libPods-Ziyou.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -251,7 +274,8 @@
 				901F1E8B22B6B5FC00D9A390 /* SF-Pro-Rounded-Thin.otf */,
 				901F1E8722B6B5FC00D9A390 /* SF-Pro-Rounded-Ultralight.otf */,
 			);
-			path = Fonts;
+			name = Fonts;
+			path = ../Artwork/Fonts;
 			sourceTree = "<group>";
 		};
 		B8346CD62283B962009F6311 /* remap_tfp_set_hsp */ = {
@@ -305,7 +329,6 @@
 				B89BAA1022826A9F00964B6F /* Ziyou */,
 				B89BAA0F22826A9F00964B6F /* Products */,
 				88EFC479228369E8005FA5BB /* Frameworks */,
-				7E5ADF0E333DC2AF91F6A3A1 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -327,8 +350,10 @@
 				B8C0B7FB22837D6E0030AE1E /* exploits */,
 				B89BAA1122826A9F00964B6F /* AppDelegate.h */,
 				B89BAA1222826A9F00964B6F /* AppDelegate.m */,
-				B89BAA1422826A9F00964B6F /* ViewController.h */,
 				B89BAA1522826A9F00964B6F /* ViewController.m */,
+				B89BAA1422826A9F00964B6F /* ViewController.h */,
+				B862F49D22C8261F003B79E6 /* SettingsViewController.h */,
+				B862F49E22C8261F003B79E6 /* SettingsViewController.m */,
 				B89BAA1722826A9F00964B6F /* Main.storyboard */,
 				8850DDE9229AF1E000D18B83 /* LaunchScreen.storyboard */,
 				B89BAA1A22826AA000964B6F /* Assets.xcassets */,
@@ -342,6 +367,7 @@
 		B8B3F95B2283B1EB000E8427 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				B8F2CF8D22DBA24600BEB355 /* NVRam */,
 				B8C4ECE52292070B008F9068 /* loadshiz */,
 				B8FB44F32284F6DB00CEDF47 /* ArchiveFile */,
 				B8FB44EC2284F34100CEDF47 /* amfi */,
@@ -415,12 +441,10 @@
 		B8C0B7FB22837D6E0030AE1E /* exploits */ = {
 			isa = PBXGroup;
 			children = (
+				B8C7055422D7CF3D00DA550D /* Machswap */,
+				B8C7055322D7CF3600DA550D /* SockPuppet */,
 				88E0151E228B629A00F9E519 /* voucher_swap */,
 				B8C0B7FF22837DD40030AE1E /* offsets */,
-				B8C0B7FC22837D990030AE1E /* machswap.m */,
-				B8C0B7FD22837D990030AE1E /* machswap.h */,
-				B866F3CC228B7A7200616377 /* machswap2.m */,
-				B866F3CD228B7A7200616377 /* machswap2.h */,
 			);
 			path = exploits;
 			sourceTree = "<group>";
@@ -453,6 +477,7 @@
 				B8E8A9BD228923BC0049F87D /* proc_info.h */,
 				B8E8A9BE228923DE0049F87D /* kern_control.h */,
 				B8E8A9BF228923F00049F87D /* route.h */,
+				B8F2CF9122DBADD400BEB355 /* mac_policy.h */,
 			);
 			path = headers;
 			sourceTree = "<group>";
@@ -461,12 +486,16 @@
 			isa = PBXGroup;
 			children = (
 				B8C0B807228385CE0030AE1E /* holders */,
+				B8C7057522D7D4CA00DA550D /* runSockPuppet.mm */,
+				B8C7057622D7D4CA00DA550D /* runSockPuppet.h */,
 				88EFC47622836924005FA5BB /* utils.m */,
 				88EFC47822836934005FA5BB /* utils.h */,
 				B8B3F9932283B36E000E8427 /* KernelUtils.c */,
 				B8B3F9942283B36E000E8427 /* KernelUtils.h */,
 				B8E8A9B822891CE00049F87D /* insert_dylib.c */,
 				B8E8A9B922891CE00049F87D /* insert_dylib.h */,
+				B8D6CFEE22D8DCC800437880 /* shenanigans.m */,
+				B8D6CFEF22D8DCC800437880 /* shenanigans.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -490,6 +519,50 @@
 				B8C4ECEE22920824008F9068 /* OSObj.h */,
 			);
 			path = loadshiz;
+			sourceTree = "<group>";
+		};
+		B8C7055322D7CF3600DA550D /* SockPuppet */ = {
+			isa = PBXGroup;
+			children = (
+				B8C7055522D7CF4C00DA550D /* iosurface.c */,
+				B8C7055622D7CF4C00DA550D /* iosurface.h */,
+				B8C7055822D7CF7700DA550D /* OSUnserializeBinary.h */,
+				B8C7055922D7D02700DA550D /* exploit.cc */,
+				B8C7055A22D7D02700DA550D /* exploit.h */,
+				B8C7055D22D7D04900DA550D /* pipe.cc */,
+				B8C7055E22D7D04900DA550D /* pipe.h */,
+				B8C7056022D7D06600DA550D /* stage1.cc */,
+				B8C7056122D7D06600DA550D /* stage1.h */,
+				B8C7056322D7D08500DA550D /* dangling_options.cc */,
+				B8C7056422D7D08500DA550D /* dangling_options.h */,
+				B8C7056622D7D0A100DA550D /* spray.cc */,
+				B8C7056722D7D0A100DA550D /* spray.h */,
+				B8C7056922D7D0BD00DA550D /* port.cc */,
+				B8C7056A22D7D0BD00DA550D /* port.h */,
+				B8C7057222D7D2FE00DA550D /* util.cc */,
+				B8C7057322D7D2FE00DA550D /* util.h */,
+			);
+			path = SockPuppet;
+			sourceTree = "<group>";
+		};
+		B8C7055422D7CF3D00DA550D /* Machswap */ = {
+			isa = PBXGroup;
+			children = (
+				B8C0B7FC22837D990030AE1E /* machswap.m */,
+				B8C0B7FD22837D990030AE1E /* machswap.h */,
+				B866F3CC228B7A7200616377 /* machswap2.m */,
+				B866F3CD228B7A7200616377 /* machswap2.h */,
+			);
+			path = Machswap;
+			sourceTree = "<group>";
+		};
+		B8F2CF8D22DBA24600BEB355 /* NVRam */ = {
+			isa = PBXGroup;
+			children = (
+				B8F2CF8E22DBA25000BEB355 /* unlocknvram.c */,
+				B8F2CF8F22DBA25000BEB355 /* unlocknvram.h */,
+			);
+			path = NVRam;
 			sourceTree = "<group>";
 		};
 		B8FB44EC2284F34100CEDF47 /* amfi */ = {
@@ -519,11 +592,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B89BAA2422826AA000964B6F /* Build configuration list for PBXNativeTarget "Ziyou" */;
 			buildPhases = (
-				C779FD892EA2760CF78E060A /* [CP] Check Pods Manifest.lock */,
 				B89BAA0A22826A9F00964B6F /* Sources */,
 				B89BAA0B22826A9F00964B6F /* Frameworks */,
 				B89BAA0C22826A9F00964B6F /* Resources */,
-				5F2F4A2F059D0156E334BCE2 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -593,48 +664,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		5F2F4A2F059D0156E334BCE2 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ziyou/Pods-Ziyou-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Ziyou/Pods-Ziyou-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Ziyou/Pods-Ziyou-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C779FD892EA2760CF78E060A /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Ziyou-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		B89BAA0A22826A9F00964B6F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -643,9 +672,12 @@
 				B8FB44F62284F6F200CEDF47 /* ArchiveFile.m in Sources */,
 				B8B3F98F2283B2EE000E8427 /* offsets.m in Sources */,
 				B8B3F9782283B205000E8427 /* log.m in Sources */,
+				B8C7057722D7D4CA00DA550D /* runSockPuppet.mm in Sources */,
 				B8B3F9802283B205000E8427 /* kernel_slide.c in Sources */,
 				B8B3F97F2283B205000E8427 /* parameters.c in Sources */,
+				B8C7057422D7D2FE00DA550D /* util.cc in Sources */,
 				B883471E2284DC7300DBA046 /* libsnappy.c in Sources */,
+				B8C7056822D7D0A100DA550D /* spray.cc in Sources */,
 				B8B3F9792283B205000E8427 /* kexecute.c in Sources */,
 				B88347192284DBCE00DBA046 /* vnode_utils.m in Sources */,
 				B89BAA1622826A9F00964B6F /* ViewController.m in Sources */,
@@ -659,20 +691,29 @@
 				B8FB44EE2284F34A00CEDF47 /* amfi_utils.m in Sources */,
 				B8B3F98C2283B2CB000E8427 /* find_port.c in Sources */,
 				B8B3F9772283B205000E8427 /* kernel_call.c in Sources */,
+				B8C7055F22D7D04900DA550D /* pipe.cc in Sources */,
 				B8B3F9982283B500000E8427 /* OffsetHolder.m in Sources */,
 				B8C4ECE822920715008F9068 /* bypass.m in Sources */,
+				B8C7056522D7D08500DA550D /* dangling_options.cc in Sources */,
+				B8F2CF9022DBA25000BEB355 /* unlocknvram.c in Sources */,
 				B8B3F9762283B205000E8427 /* platform_match.c in Sources */,
 				B8B3F9952283B36E000E8427 /* KernelUtils.c in Sources */,
 				B8B3F9752283B205000E8427 /* pac.c in Sources */,
 				B8C0B7FE22837D990030AE1E /* machswap.m in Sources */,
+				B862F49F22C8261F003B79E6 /* SettingsViewController.m in Sources */,
 				B89BAA1322826A9F00964B6F /* AppDelegate.m in Sources */,
 				B8C4ECEF22920824008F9068 /* OSObj.c in Sources */,
 				B8B3F97D2283B205000E8427 /* user_client.c in Sources */,
+				B8C7056222D7D06600DA550D /* stage1.cc in Sources */,
+				B8D6CFF022D8DCC800437880 /* shenanigans.m in Sources */,
+				B8C7055722D7CF4C00DA550D /* iosurface.c in Sources */,
 				B8E8A9BA22891CE00049F87D /* insert_dylib.c in Sources */,
 				B8C0B80A228385DA0030AE1E /* ImportantHolders.c in Sources */,
 				88EFC47722836924005FA5BB /* utils.m in Sources */,
 				B8346CDD2283BA2F009F6311 /* PFOffs.c in Sources */,
+				B8C7055B22D7D02700DA550D /* exploit.cc in Sources */,
 				B866F3CE228B7A7200616377 /* machswap2.m in Sources */,
+				B8C7056B22D7D0BD00DA550D /* port.cc in Sources */,
 				B8FB44FE2284F7C600CEDF47 /* ArchiveUtils.m in Sources */,
 				B8346CE42283BE99009F6311 /* lzssdec.cpp in Sources */,
 				B8B3F97B2283B205000E8427 /* platform.c in Sources */,
@@ -810,7 +851,6 @@
 		};
 		B89BAA2522826AA000964B6F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 641F70A1296F0B0ED66B91C6 /* Pods-Ziyou.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -835,7 +875,6 @@
 		};
 		B89BAA2622826AA000964B6F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B7B5B25D106499E500F4B24C /* Pods-Ziyou.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

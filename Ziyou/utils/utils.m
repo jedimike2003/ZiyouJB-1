@@ -17,9 +17,12 @@
 #include "kernel_slide.h"
 #include "kernel_structs.h"
 #include "utils.h"
+#include "shenanigans.h"
 #include "common.h"
 #include "ms_offs.h"
 #include "bypass.h"
+#include "unlocknvram.h"
+#include "iosurface.h"
 #include "machswap.h"
 #include "KernelUtils.h"
 #include "remap_tfp_set_hsp.h"
@@ -32,6 +35,7 @@
 #include "OffsetHolder.h"
 #include "offsets.h"
 #include <sys/mount.h>
+#include "runSockPuppet.h"
 #include <spawn.h>
 #include <pwd.h>
 #include "kernel_exec.h"
@@ -49,7 +53,183 @@
 #import "voucher_swap.h"
 #import "kernel_call.h"
 #import "machswap2.h"
-#include "SVProgressHUD.h"
+#include <sys/sysctl.h>
+
+bool runShenPatchOWO = false;
+
+
+char *sysctlWithName(const char *name) {
+    kern_return_t kr = KERN_FAILURE;
+    char *ret = NULL;
+    size_t *size = NULL;
+    size = (size_t *)malloc(sizeof(size_t));
+    if (size == NULL) goto out;
+    bzero(size, sizeof(size_t));
+    if (sysctlbyname(name, NULL, size, NULL, 0) != ERR_SUCCESS) goto out;
+    ret = (char *)malloc(*size);
+    if (ret == NULL) goto out;
+    bzero(ret, *size);
+    if (sysctlbyname(name, ret, size, NULL, 0) != ERR_SUCCESS) goto out;
+    kr = KERN_SUCCESS;
+    out:
+    if (kr == KERN_FAILURE)
+    {
+        free(ret);
+        ret = NULL;
+    }
+    free(size);
+    size = NULL;
+    return ret;
+}
+
+bool machineNameContains(const char *string) {
+    char *machineName = sysctlWithName("hw.machine");
+    if (machineName == NULL) return false;
+    bool ret = strstr(machineName, string) != NULL;
+    free(machineName);
+    machineName = NULL;
+    return ret;
+}
+
+NSString *getKernelBuildVersion() {
+    NSString *kernelBuild = nil;
+    NSString *cleanString = nil;
+    char *kernelVersion = NULL;
+    kernelVersion = sysctlWithName("kern.version");
+    if (kernelVersion == NULL) return nil;
+    cleanString = [NSString stringWithUTF8String:kernelVersion];
+    free(kernelVersion);
+    kernelVersion = NULL;
+    cleanString = [[cleanString componentsSeparatedByString:@"; "] objectAtIndex:1];
+    cleanString = [[cleanString componentsSeparatedByString:@"-"] objectAtIndex:1];
+    cleanString = [[cleanString componentsSeparatedByString:@"/"] objectAtIndex:0];
+    kernelBuild = [cleanString copy];
+    return kernelBuild;
+}
+
+bool supportsExploit(int exploit) {
+
+    
+    //0 = MachSwap
+    //1 = MachSwap2
+    //2 = Voucher_Swap
+    //3 = SockPuppet
+    
+    vm_size_t kernel_page_size = 0;
+    vm_size_t *out_page_size = NULL;
+    host_t host = mach_host_self();
+    if (!MACH_PORT_VALID(host)) goto out;
+    out_page_size = (vm_size_t *)malloc(sizeof(vm_size_t));
+    if (out_page_size == NULL) goto out;
+    bzero(out_page_size, sizeof(vm_size_t));
+    if (_host_page_size(host, out_page_size) != KERN_SUCCESS) goto out;
+    kernel_page_size = *out_page_size;
+    out:
+    if (MACH_PORT_VALID(host)) mach_port_deallocate(mach_task_self(), host); host = HOST_NULL;
+    free(out_page_size);
+    out_page_size = NULL;
+    
+    NSString *minKernelBuildVersion = nil;
+    NSString *maxKernelBuildVersion = nil;
+    
+    switch (exploit) {
+        case 2: {
+            if (kernel_page_size != 0x4000) {
+                return false;
+            }
+            if (machineNameContains("iPad5,") &&
+                kCFCoreFoundationVersionNumber >= 1535.12) {
+                return false;
+            }
+            minKernelBuildVersion = @"4397.0.0.2.4~1";
+            maxKernelBuildVersion = @"4903.240.8~8";
+            break;
+        }
+        case 0: {
+            if (kernel_page_size != 0x1000 &&
+                !machineNameContains("iPad5,") &&
+                !machineNameContains("iPhone8,") &&
+                !machineNameContains("iPad6,")) {
+                return false;
+            }
+            minKernelBuildVersion = @"4397.0.0.2.4~1";
+            maxKernelBuildVersion = @"4903.240.8~8";
+            break;
+        }
+        case 1: {
+            minKernelBuildVersion = @"4397.0.0.2.4~1";
+            maxKernelBuildVersion = @"4903.240.8~8";
+            break;
+        }
+        default:
+            return false;
+            break;
+    }
+    
+    if (minKernelBuildVersion != nil && maxKernelBuildVersion != nil) {
+        NSString *kernelBuildVersion = getKernelBuildVersion();
+        if (kernelBuildVersion != nil) {
+            if ([kernelBuildVersion compare:minKernelBuildVersion options:NSNumericSearch] != NSOrderedAscending && [kernelBuildVersion compare:maxKernelBuildVersion options:NSNumericSearch] != NSOrderedDescending) {
+                return true;
+            }
+        }
+    } else {
+        return true;
+    }
+    
+    return false;
+}
+
+
+int autoSelectExploit()
+{
+    
+    
+    
+    //0 = MachSwap
+    //1 = MachSwap2
+    //2 = Voucher_Swap
+    //3 = SockPuppet
+    if (supportsExploit(0))
+    {
+        return 0;
+    } else if (supportsExploit(1))
+    {
+        return 1;
+    } else if (supportsExploit(2))
+    {
+        return 2;
+    } else {
+        return 3;
+    }
+    
+}
+
+void set_csflags(uint64_t proc) {
+    
+    uint32_t csflags = ReadKernel32(proc + off_p_csflags);
+    csflags |= CS_PLATFORM_BINARY;
+    WriteKernel32(proc + off_p_csflags, csflags);
+}
+
+NSString *getNameFromInt(int exp_int)
+{
+    if (exp_int == 0)
+    {
+        return @"Machswap";
+    } else if (exp_int == 1)
+    {
+        return @"Machswap 2";
+    } else if (exp_int == 2)
+    {
+        return @"Voucher_Swap";
+    } else if (exp_int == 3)
+    {
+        return @"SockPuppet";
+    } else {
+        return @"ERROR";
+    }
+}
 
 void initSettingsIfNotExist()
 {
@@ -61,8 +241,41 @@ void initSettingsIfNotExist()
         [defaults setInteger:0 forKey:@"PackagerType"];
         [defaults setInteger:0 forKey:@"LoadTweaks"];
         [defaults setInteger:1 forKey:@"RestoreFS"];
+        [defaults setInteger:0 forKey:@"RootSetting"];
+        [defaults setValue:@"0x1111111111111111" forKey:@"Nonce"];
+        [defaults setInteger:1 forKey:@"SetNonce"];
         [defaults synchronize];
+        
+        if ([getNameFromInt(autoSelectExploit())  isEqual: @"ERROR"])
+        {
+            showMSG(@"There was an error automatically selecting your exploit. The default has been set to machswap. Please change this under settings if you would like to use a different one.", false, false);
+        } else {
+            NSString *msgString = [NSString stringWithFormat:@"Since this is your first run, we have automatically selected what we think is the best exploit for your device. The exploit chosen is %@. If this is not your desired exploit, please change it under the settings menu.", getNameFromInt(autoSelectExploit())];
+            
+            showMSG(msgString, false, false);
+            
+            [defaults setInteger:autoSelectExploit() forKey:@"ExploitType"];
+        }
+        
+        
     }
+}
+
+bool shouldSetNonce()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults integerForKey:@"SetNonce"] == 0)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+NSString* getBootNonce()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults valueForKey:@"Nonce"];
 }
 
 void saveCustomSetting(NSString *setting, int settingResult)
@@ -94,6 +307,17 @@ int getPackagerType()
     return (int)[defaults integerForKey:@"PackagerType"];
 }
 
+BOOL isRootless()
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults integerForKey:@"RootSetting"] == 1)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 BOOL shouldRestoreFS()
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -106,6 +330,31 @@ BOOL shouldRestoreFS()
 }
 
 
+uint64_t selfproc() {
+    // TODO use kcall(proc_find) + ZM_FIX_ADDR
+    uint64_t proc = 0;
+    if (proc == 0) {
+        proc = ReadKernel64(current_task + OFFSET(task, bsd_info));
+        NSLog(@"Found proc 0x%llx for PID %i", proc, getpid());    }
+    return proc;
+}
+
+
+
+void platformize(uint64_t proc) {
+    uint64_t task = ReadKernel64(proc + off_task);
+    uint32_t t_flags = ReadKernel32(task + off_t_flags);
+    t_flags |= 0x400;
+    WriteKernel32(task+off_t_flags, t_flags);
+    uint32_t csflags = ReadKernel32(proc + off_p_csflags);
+    WriteKernel32(proc + off_p_csflags, csflags | 0x24004001u);
+}
+
+void setcsflags(uint64_t proc) {
+    uint32_t csflags = ReadKernel32(proc + off_p_csflags);
+    uint32_t newflags = (csflags | CS_PLATFORM_BINARY | CS_INSTALLER | CS_GET_TASK_ALLOW | CS_DEBUGGED) & ~(CS_RESTRICT | CS_HARD | CS_KILL);
+    WriteKernel32(proc + off_p_csflags, newflags);
+}
 
 
 
@@ -126,16 +375,6 @@ void runMachswap() {
     NSLog(@"%@", [NSString stringWithFormat:@"TFP0: 0x%x", tfp0]);
     NSLog(@"%@", [NSString stringWithFormat:@"KERNEL BASE: %llx", kbase]);
     NSLog(@"%@", [NSString stringWithFormat:@"KERNEL SLIDE: %llx", kernel_slide]);
-    
-    NSString *TFP0_log = [NSString stringWithFormat:@"TFP0: 0x%x", tfp0];
-    NSString *kbase_log = [NSString stringWithFormat:@"KERNEL BASE: 0x%llx", kbase];
-    NSString *kernel_slide_log = [NSString stringWithFormat:@"KERNEL SLIDE: 0x%llx", kernel_slide];
-    [SVProgressHUD showWithStatus:TFP0_log];
-    sleep(1);
-    [SVProgressHUD showWithStatus:kbase_log];
-    sleep(1);
-    [SVProgressHUD showWithStatus:kernel_slide_log];
-    sleep(1);
     
     NSLog(@"UID: %u", getuid());
     NSLog(@"GID: %u", getgid());
@@ -166,13 +405,15 @@ void runMachswap2() {
 }
 
 
+
 //V_SWAP
 
-uint64_t getKBASE() {
-    uint64_t hostADDR = find_port_address(mach_host_self(), MACH_MSG_TYPE_COPY_SEND);
-    uint64_t host = ReadKernel64(hostADDR + koffset(KSTRUCT_OFFSET_IPC_PORT_IP_KOBJECT));
-    uint64_t base = host & ~0xfffULL;
+uint64_t find_kernel_base() {
+    uint64_t hostport_addr = find_port_address(mach_host_self(), MACH_MSG_TYPE_COPY_SEND);
+    uint64_t realhost = ReadKernel64(hostport_addr + koffset(KSTRUCT_OFFSET_IPC_PORT_IP_KOBJECT));
     
+    uint64_t base = realhost & ~0xfffULL;
+    // walk down to find the magic:
     for (int i = 0; i < 0x10000; i++) {
         if (ReadKernel32(base) == 0xfeedfacf) {
             return base;
@@ -182,22 +423,39 @@ uint64_t getKBASE() {
     return 0;
 }
 
+uint64_t selfproc_cached;
+
 void runVoucherSwap() {
     voucher_swap();
     
-    tfp0 = kernel_task_port;
-    
-    if (MACH_PORT_VALID(tfp0))
-    {
-        kbase = getKBASE();
-        kernel_slide = (kbase - KADD_SEARCH);
+    if (MACH_PORT_VALID(tfp0)) {
         
-        rootMe(0, selfproc());
-        unsandbox(selfproc());
+        kernel_slide_init();
+        kbase = (kernel_slide + KADD_SEARCH);
+        
+        runShenPatchOWO = true;
+        
     } else {
         LOG("ERROR!");
         exit(1);
     }
+    
+    NSLog(@"%@", [NSString stringWithFormat:@"TFP0: 0x%x", tfp0]);
+    NSLog(@"%@", [NSString stringWithFormat:@"KERNEL BASE: %llx", kbase]);
+    NSLog(@"%@", [NSString stringWithFormat:@"KERNEL SLIDE: %llx", kernel_slide]);
+    
+    NSLog(@"UID: %u", getuid());
+    NSLog(@"GID: %u", getgid());
+    
+}
+
+void runSockPuppetExploit()
+{
+    runSockPuppet();
+    
+    set_tfp0(kernel_task_port);
+    
+    runShenPatchOWO = true;
     
     NSLog(@"%@", [NSString stringWithFormat:@"TFP0: 0x%x", tfp0]);
     NSLog(@"%@", [NSString stringWithFormat:@"KERNEL BASE: %llx", kbase]);
@@ -213,6 +471,7 @@ void runExploit(int expType)
     //0 = MachSwap
     //1 = MachSwap2
     //2 = Voucher_Swap
+    //3 = SockPuppet
     if (expType == 0)
     {
         LOG("Running MachSwap...");
@@ -225,6 +484,19 @@ void runExploit(int expType)
     {
         LOG("Running Voucher_Swap...");
         runVoucherSwap();
+    } else if (expType == 3)
+    {
+        runSockPuppet();
+        
+        if (MACH_PORT_VALID(kernel_task_port))
+        {
+            set_tfp0(kernel_task_port);
+            kernel_slide_init();
+            kbase = (kernel_slide + KADD_SEARCH);
+            NSString *str = [NSString stringWithFormat:@"TFP0: 0x%x", tfp0];
+            showMSG(str, true, false);
+        }
+        
     } else {
         LOG("No Exploit? Tf...");
         exit(1);
@@ -330,17 +602,6 @@ bool ensure_directory(const char *directory, int owner, mode_t mode) {
 }
 
 
-uint64_t give_creds_to_process_at_addr(uint64_t proc, uint64_t cred_addr)
-{
-    uint64_t orig_creds = ReadKernel64(proc + koffset(KSTRUCT_OFFSET_PROC_UCRED));
-    LOG("orig_creds = " ADDR, orig_creds);
-    if (!ISADDR(orig_creds)) {
-        LOG("failed to get orig_creds!");
-        return 0;
-    }
-    WriteKernel64(proc + koffset(KSTRUCT_OFFSET_PROC_UCRED), cred_addr);
-    return orig_creds;
-}
 
 bool is_mountpoint(const char *filename) {
     struct stat buf;
@@ -375,12 +636,7 @@ void set_tfplatform(uint64_t proc) {
     WriteKernel32(task+off_t_flags, t_flags);
 }
 
-void set_csflags(uint64_t proc) {
-    
-    uint32_t csflags = ReadKernel32(proc + off_p_csflags);
-    csflags |= CS_PLATFORM_BINARY;
-    WriteKernel32(proc + off_p_csflags, csflags);
-}
+
 
 
 
@@ -391,11 +647,11 @@ void saveOffs() {
     
     NSString *offsetsFile = @"/ziyou/offsets.plist";
     NSMutableDictionary *dictionary = [NSMutableDictionary new];
-    #define ADDRSTRING(val)        [NSString stringWithFormat:@ADDR, val]
-    #define CACHEADDR(value, name) do { \
-    dictionary[@(name)] = ADDRSTRING(value); \
-    } while (false)
-    #define CACHEOFFSET(offset, name) CACHEADDR(GETOFFSET(offset), name)
+#define ADDRSTRING(val)        [NSString stringWithFormat:@ADDR, val]
+#define CACHEADDR(value, name) do { \
+dictionary[@(name)] = ADDRSTRING(value); \
+} while (false)
+#define CACHEOFFSET(offset, name) CACHEADDR(GETOFFSET(offset), name)
     
     CACHEADDR(kbase, "KernelBase");
     CACHEADDR(ReadKernel64(ReadKernel64(GETOFFSET(kernel_task)) + koffset(KSTRUCT_OFFSET_TASK_BSD_INFO)), "KernProcAddr");
@@ -433,8 +689,8 @@ void saveOffs() {
     CACHEOFFSET(IORegistryEntry__getRegistryEntryID, "IORegistryEntry__getRegistryEntryID");
     CACHEOFFSET(proc_rele, "proc_rele");
     
-    #undef CACHEOFFSET
-    #undef CACHEADDR
+#undef CACHEOFFSET
+#undef CACHEADDR
     if (![[NSMutableDictionary dictionaryWithContentsOfFile:offsetsFile] isEqual:dictionary]) {
         LOG("Saving Offsets For JelbrekD...");
         _assert(([dictionary writeToFile:offsetsFile atomically:YES]), @"Failed to save offsets.", true);
@@ -442,6 +698,87 @@ void saveOffs() {
         LOG("Successfully saved offsets!");
     }
 }
+
+void saveOffs_rootless() {
+    
+    _assert(chdir("/var/containers/Bundle/ziyou") == ERR_SUCCESS, @"Failed to create jailbreak directory.", true);
+    
+    
+    NSString *offsetsFile = @"/var/containers/Bundle/ziyou/offsets.plist";
+    NSMutableDictionary *dictionary = [NSMutableDictionary new];
+#define ADDRSTRING(val)        [NSString stringWithFormat:@ADDR, val]
+#define CACHEADDR(value, name) do { \
+dictionary[@(name)] = ADDRSTRING(value); \
+} while (false)
+#define CACHEOFFSET(offset, name) CACHEADDR(GETOFFSET(offset), name)
+    
+    CACHEADDR(kbase, "KernelBase");
+    CACHEADDR(ReadKernel64(ReadKernel64(GETOFFSET(kernel_task)) + koffset(KSTRUCT_OFFSET_TASK_BSD_INFO)), "KernProcAddr");
+    CACHEADDR(GETOFFSET(zone_map_ref) - kernel_slide, "ZoneMapOffset");
+    CACHEADDR(ReadKernel64(GETOFFSET(OSBoolean_True)) + sizeof(void *), "OSBoolean_False");
+    CACHEADDR(ReadKernel64(GETOFFSET(OSBoolean_True)), "OSBoolean_True");
+    CACHEOFFSET(kernel_task, "KernelTask");
+    CACHEOFFSET(trustcache, "trust_cache");
+    CACHEOFFSET(pmap_load_trust_cache, "pmap_load_trust_cache");
+    CACHEOFFSET(smalloc, "smalloc");
+    CACHEOFFSET(add_x0_x0_0x40_ret, "add_x0_x0_0x40_ret");
+    CACHEOFFSET(zone_map_ref, "zone_map_ref");
+    CACHEOFFSET(osunserializexml, "osunserializexml");
+    CACHEOFFSET(vfs_context_current, "vfs_context_current");
+    CACHEOFFSET(vnode_lookup, "vnode_lookup");
+    CACHEOFFSET(vnode_put, "vnode_put");
+    CACHEOFFSET(kalloc_canblock, "kalloc_canblock");
+    CACHEOFFSET(ubc_cs_blob_allocate_site, "ubc_cs_blob_allocate_site");
+    CACHEOFFSET(cs_validate_csblob, "cs_validate_csblob");
+    CACHEOFFSET(cs_find_md, "cs_find_md");
+    CACHEOFFSET(cs_blob_generation_count, "cs_blob_generation_count");
+    CACHEOFFSET(kfree, "kfree");
+    CACHEOFFSET(smalloc, "Smalloc");
+    CACHEOFFSET(allproc, "AllProc");
+    CACHEOFFSET(paciza_pointer__l2tp_domain_module_stop, "P2Stop");
+    CACHEOFFSET(paciza_pointer__l2tp_domain_module_start, "P2Start");
+    CACHEOFFSET(l2tp_domain_inited, "L2DI");
+    CACHEOFFSET(sysctl__net_ppp_l2tp, "CTL2");
+    CACHEOFFSET(sysctl_unregister_oid, "CTLUO");
+    CACHEOFFSET(mov_x0_x4__br_x5, "Mx0");
+    CACHEOFFSET(mov_x9_x0__br_x1, "Mx9");
+    CACHEOFFSET(mov_x10_x3__br_x6, "Mx10");
+    CACHEOFFSET(kernel_forge_pacia_gadget, "KFPG");
+    CACHEOFFSET(IOUserClient__vtable, "IOUserClient__vtable");
+    CACHEOFFSET(IORegistryEntry__getRegistryEntryID, "IORegistryEntry__getRegistryEntryID");
+    CACHEOFFSET(proc_rele, "proc_rele");
+    
+#undef CACHEOFFSET
+#undef CACHEADDR
+    if (![[NSMutableDictionary dictionaryWithContentsOfFile:offsetsFile] isEqual:dictionary]) {
+        LOG("Saving Offsets For JelbrekD...");
+        _assert(([dictionary writeToFile:offsetsFile atomically:YES]), @"Failed to save offsets.", true);
+        _assert(createFile(offsetsFile.UTF8String, 0, 0644), @"Failed to save offsets.", true);
+        LOG("Successfully saved offsets!");
+    }
+}
+
+
+kptr_t swap_sandbox(kptr_t proc, kptr_t sandbox) {
+    kptr_t ret = KPTR_NULL;
+    kptr_t const ucred = ReadKernel64(proc + koffset(KSTRUCT_OFFSET_PROC_UCRED));
+    kptr_t const cr_label = ReadKernel64(ucred + koffset(KSTRUCT_OFFSET_UCRED_CR_LABEL));
+    kptr_t const sandbox_addr = cr_label + 0x8 + 0x8;
+    kptr_t const current_sandbox = ReadKernel64(sandbox_addr);
+    WriteKernel64(sandbox_addr, sandbox);
+    ret = current_sandbox;
+    out:;
+    return ret;
+}
+
+
+
+
+
+
+
+
+
 
 
 void getOffsets() {
@@ -461,6 +798,7 @@ void getOffsets() {
         char *args[5] = { "lzssdec", "-o", (char *)[NSString stringWithFormat:@"0x%x", macho_header_offset].UTF8String, (char *)original_kernel_cache_path, (char *)decompressed_kernel_cache_path};
         _assert(lzssdec(5, args) == ERR_SUCCESS, @"Failed to initialize patchfinder64.", true);
         fclose(original_kernel_cache);
+        
     }
     struct utsname u = { 0 };
     _assert(uname(&u) == ERR_SUCCESS, @"Failed to initialize patchfinder64.", true);
@@ -507,6 +845,13 @@ void getOffsets() {
     //Get Release Proc for jailbreakd
     findPFOffset(proc_rele);
     
+    //Voucher Swap
+    findPFOffset(shenanigans);
+    
+    //NVRam
+    findPFOffset(IOMalloc);
+    findPFOffset(IOFree);
+    
     
     findPFOffset(trustcache);
     findPFOffset(OSBoolean_True);
@@ -541,25 +886,22 @@ void getOffsets() {
         findPFOffset(kernel_forge_pacda_gadget);
         findPFOffset(IOUserClient__vtable);
         findPFOffset(IORegistryEntry__getRegistryEntryID);
-        findPFOffset(shenanigans);
     }
     #undef findPFOffset
     
     //We got offsets.
     found_offs = true;
     term_kernel();
-}
-
-
-uint64_t selfproc() {
-    // TODO use kcall(proc_find) + ZM_FIX_ADDR
-    uint64_t proc = 0;
-    if (proc == 0) {
-        proc = ReadKernel64(current_task + OFFSET(task, bsd_info));
-        NSLog(@"Found proc 0x%llx for PID %i", proc, getpid());
+    
+    if (runShenPatchOWO)
+    {
+        LOG("We are going to use the shenanigans patch.");
+        runShenPatch();
     }
-    return proc;
+    
 }
+
+
 
 void setGID(gid_t gid, uint64_t proc) {
     if (getgid() == gid) return;
@@ -685,9 +1027,41 @@ int execCmd(const char *cmd, ...) {
     return WEXITSTATUS(rv);
 }
 
-void rootMe(int both, uint64_t proc) {
-    setUID(both, proc);
-    setGID(both, proc);
+uint64_t getKernproc()
+{
+    uint64_t kernproc = 0x0;
+    while (kernproc != 0x0)
+    {
+        uint32_t found_pid = ReadKernel32(kernproc + off_p_pid);
+        if (found_pid == 0)
+        {
+            break;
+        }
+        
+        /*
+         kernproc will always be at the start of the linked list,
+         so we loop backwards in order to find it
+         */
+        kernproc = ReadKernel64(kernproc + 0x0);
+    }
+    
+    LOG("GOT KERNPROC AT: %llx", kernproc);
+    return kernproc;
+}
+
+void rootMe(uint64_t proc) {
+    uint64_t ucred = ReadKernel64(proc + off_p_ucred);
+    WriteKernel32(proc + off_p_uid, 0);
+    WriteKernel32(proc + off_p_ruid, 0);
+    WriteKernel32(proc + off_p_gid, 0);
+    WriteKernel32(proc + off_p_rgid, 0);
+    WriteKernel32(ucred + off_ucred_cr_uid, 0);
+    WriteKernel32(ucred + off_ucred_cr_ruid, 0);
+    WriteKernel32(ucred + off_ucred_cr_svuid, 0);
+    WriteKernel32(ucred + off_ucred_cr_ngroups, 1);
+    WriteKernel32(ucred + off_ucred_cr_groups, 0);
+    WriteKernel32(ucred + off_ucred_cr_rgid, 0);
+    WriteKernel32(ucred + off_ucred_cr_svgid, 0);
 }
 
 void unsandbox(uint64_t proc) {
@@ -749,8 +1123,6 @@ bool mod_plist_file(NSString *filename, void (^function)(id)) {
 void restoreRootFS()
 {
     struct passwd *const root_pw = getpwnam("root");
-    
-    [SVProgressHUD showWithStatus:@"Restoring RootFS. This will take a bit."];
     
     LOG("Restoring RootFS....");
     int const rootfd = open("/", O_RDONLY);
@@ -824,6 +1196,7 @@ void restoreRootFS()
     LOG("Successfully cleaned up.");
     
     // Disallow SpringBoard to show non-default system apps.
+
     
     LOG("Disallowing SpringBoard to show non-default system apps...");
     _assert(mod_plist_file(@"/var/mobile/Library/Preferences/com.apple.springboard.plist", ^(id plist) {
@@ -831,6 +1204,8 @@ void restoreRootFS()
     }), localize(@"Unable to update SpringBoard preferences."), true);
     LOG("Successfully disallowed SpringBoard to show non-default system apps.");
     
+    
+    disableRootFS();
 
     
     LOG("Rebooting...");
@@ -907,12 +1282,6 @@ void renameSnapshot(int rootfd, const char* rootFsMountPoint, const char **snaps
     reboot(RB_QUICK);
 }
 
-uint64_t get_kernel_cred_addr()
-{
-    uint64_t kernel_proc_struct_addr = ReadKernel64(ReadKernel64(GETOFFSET(kernel_task)) + koffset(KSTRUCT_OFFSET_TASK_BSD_INFO));
-    return ReadKernel64(kernel_proc_struct_addr + koffset(KSTRUCT_OFFSET_PROC_UCRED));
-}
-
 void preMountFS(const char *thedisk, int root_fs, const char **snapshots, const char *origfs)
 {
     LOG("Pre-Mounting RootFS...");
@@ -982,8 +1351,6 @@ bool copyMe(const char *from, const char *to)
 void remountFS(bool shouldRestore) {
     
     
-    
-    
     //Vars
     int root_fs = open("/", O_RDONLY);
     
@@ -1035,7 +1402,6 @@ void remountFS(bool shouldRestore) {
     if (shouldRestore)
     {
         restoreRootFS();
-        saveCustomSetting(@"RestoreFS", 1);
     }
     
 }
@@ -1168,6 +1534,37 @@ bool ensure_file(const char *file, int owner, mode_t mode) {
                                                                }];
 }
 
+
+
+
+
+//NONCE SHIT
+
+
+void setNonce(const char *nonce, bool shouldSet)
+{
+    if (shouldSet)
+    {
+        //Unlock NVRam
+        unlocknvram();
+        
+        execCmd("/usr/sbin/nvram", "-p", NULL);
+        
+        if (execCmd("/usr/sbin/nvram", "com.apple.System.boot-nonce", NULL) != ERR_SUCCESS || strstr(lastSystemOutput.bytes, nonce) == NULL) {
+            // Set boot-nonce.
+            
+            _assert(execCmd("/usr/sbin/nvram", [NSString stringWithFormat:@"%s=%s", "com.apple.System.boot-nonce", nonce].UTF8String, NULL) == ERR_SUCCESS, localize(@"Unable to set boot nonce."), true);
+            _assert(execCmd("/usr/sbin/nvram", [NSString stringWithFormat:@"%s=%s", "IONVRAM-FORCESYNCNOW-PROPERTY", "com.apple.System.boot-nonce"].UTF8String, NULL) == ERR_SUCCESS, localize(@"Unable to synchronize boot nonce."), true);
+        }
+        
+        execCmd("/usr/sbin/nvram", "-p", NULL);
+        
+        locknvram();
+    }
+}
+
+
+
 bool doesFileExist(NSString *fileName)
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileName])
@@ -1286,6 +1683,11 @@ bool killAMFID() {
 void createWorkingDir()
 {
     _assert(ensure_directory("/ziyou", 0, 0755), @"yo wtf?", true);
+}
+
+void createWorkingDir_rootless()
+{
+    _assert(ensure_directory("/var/containers/Bundle/ziyou", 0, 755), @"yo wtf", true);
 }
 
 bool runDpkg(NSArray <NSString*> *args, bool forceDeps) {
@@ -1509,28 +1911,29 @@ void xpcFucker()
     
     //Always update xpcproxy
     //TODO: Hash Check here so we don't have to patch it everytime.
-    removeFileIfExists(patchedExec);
-    
-    //Sleep Here
-    sleep(0.5);
-    
-    LOG("%s Does Not Exist! Continuing...", patchedExec);
-    copyMe("/usr/libexec/xpcproxy", "/usr/libexec/xpcproxy.sliced");
-    
-    //Sleep here
-    sleep(0.5);
-    
-    //INSERT DYLIB ARGS
-    const char *args[] = { "insert_dylib", "--all-yes", "--inplace", "--overwrite", "/usr/lib/pspawn_payload.dylib", "/usr/libexec/xpcproxy.sliced", NULL};
-    insert_dylib_main(6, args);
-    LOG("Patched Executable!");
-    
-    //Set Permissions
-    chmod(patchedExec, 755);
-    chown(patchedExec, 0, 0);
-    
-    //Sign WITH JTOOL (ldid wasn't working all that well, but who cares. This works JUST fine.0
-    execCmd("/ziyou/jtool", "--sign", "--inplace", "--ent", "/ziyou/default.ent", "/usr/libexec/xpcproxy.sliced", NULL);
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:patchedExec]])
+    {
+        //Sleep Here
+        sleep(0.2);
+        
+        LOG("%s Does Not Exist! Continuing...", patchedExec);
+        copyMe("/usr/libexec/xpcproxy", "/usr/libexec/xpcproxy.sliced");
+        
+        //Sleep here
+        sleep(0.2);
+        
+        //INSERT DYLIB ARGS
+        const char *args[] = { "insert_dylib", "--all-yes", "--inplace", "--overwrite", "/usr/lib/pspawn_payload.dylib", "/usr/libexec/xpcproxy.sliced", NULL};
+        insert_dylib_main(6, args);
+        LOG("Patched Executable!");
+        
+        //Set Permissions
+        chmod(patchedExec, 755);
+        chown(patchedExec, 0, 0);
+        
+        //Sign WITH JTOOL (ldid wasn't working all that well, but who cares. This works JUST fine.0
+        execCmd("/ziyou/jtool", "--sign", "--inplace", "--ent", "/ziyou/default.ent", "/usr/libexec/xpcproxy.sliced", NULL);
+    }
     
     trust_file([NSString stringWithUTF8String:patchedExec]);
     
@@ -1555,13 +1958,43 @@ void xpcFucker()
     //We Should Now Have A WORKING Patched XPCProxy!
     //We should be alive.
     LOG("Hello?");
+    
+   
  }
 
-
-void installSubstitute()
+void kickMe()
 {
-    
+    //After we extracted the bootstrap, this is all we need to get back into jailbroken state.
+    removeFileIfExists("/Library/MobileSubstrate/ServerPlugins/Unrestrict.dylib");
+    trust_file(@"/usr/lib/libsubstitute.dylib");
+    trust_file(@"/usr/lib/libsubstrate.dylib");
+    trust_file(@"/usr/lib/TweakInject.dylib");
+    trust_file(@"/usr/lib/pspawn_payload.dylib");
+    trust_file(@"/usr/lib/amfid_payload.dylib");
+    startJailbreakD();
+    xpcFucker();
+    killAMFID();
 }
+
+void updatePayloads()
+{
+
+    //Backup Tweaks
+    removeFileIfExists("/usr/lib/TweakInject.bak");
+    removeFileIfExists("/usr/lib/TweakInject/Safemode.dylib");
+    removeFileIfExists("/usr/lib/TweakInject/Safemode.plist");
+    copyMe("/usr/lib/TweakInject", "/usr/lib/TweakInject.bak");
+    removeFileIfExists("/usr/bin/sbreload");
+    removeFileIfExists("/usr/bin/rebackboardd");
+    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+    copyMe("/usr/lib/TweakInject/Safemode.dylib", "/usr/lib/TweakInject.bak/Safemode.dylib");
+    copyMe("/usr/lib/TweakInject/Safemode.plist", "/usr/lib/TweakInject.bak/Safemode.plist");
+    removeFileIfExists("/usr/lib/TweakInject");
+    copyMe("/usr/lib/TweakInject.bak", "/usr/lib/TweakInject");
+    trust_file(@"/usr/lib/TweakInject/Safemode.dylib");
+    kickMe();
+}
+
 
 void addToArray(NSString *package, NSMutableArray *array)
 {
@@ -1618,80 +2051,96 @@ void fixFS()
     LOG("[Slice] Finished Fixing Filesystem!");
 }
 
-void kickMe()
-{
-    //After we extracted the bootstrap, this is all we need to get back into jailbroken state.
-    removeFileIfExists("/Library/MobileSubstrate/ServerPlugins/Unrestrict.dylib");
-    trust_file(@"/usr/lib/libsubstitute.dylib");
-    trust_file(@"/usr/lib/libsubstrate.dylib");
-    trust_file(@"/usr/lib/TweakInject.dylib");
-    trust_file(@"/usr/lib/pspawn_payload.dylib");
-    trust_file(@"/usr/lib/amfid_payload.dylib");
-    startJailbreakD();
-    [SVProgressHUD showWithStatus:@"Patching xpcproxy"];
-    xpcFucker();
-    [SVProgressHUD showWithStatus:@"Killing AMFID"];
-    killAMFID();
-    sleep(3);
-}
 
 
-void installCydia()
+
+void installCydia(bool post)
 {
-    //Initial Resources
-    [SVProgressHUD showWithStatus:@"Extracting Resources"];
-    extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
-    fixFS();
-    
-    //Firmware Package
-    [SVProgressHUD showWithStatus:@"Configuring Firmware Package"];
-    systemCmd("/usr/libexec/cydia/firmware.sh");
-    
-    //Jailbreakd, Pspawn, Amfid
-    [SVProgressHUD showWithStatus:@"Extracting Resources"];
-    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
-    
-    //Start all the payloads
-    kickMe();
-    
-    //Run DPKG on itself and readline is needed
-    [SVProgressHUD showWithStatus:@"Running DPKG"];
-    installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
-    installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
-    
-    //PRE-DEPENDS
-    installDeb([get_debian_file(@"tar.deb") UTF8String], true);
-    installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
-    installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
-    installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
-    installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
-    installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
-    installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
-    
-    
-    
-    //Idk why we need to do this bullshit.
-    for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+    if (post == false)
     {
-        if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg isEqual: @"xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+        //Initial Resources
+        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+        fixFS();
+        
+        //Firmware Package
+        systemCmd("/usr/libexec/cydia/firmware.sh");
+        
+        //Jailbreakd, Pspawn, Amfid
+        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+        
+        //Start all the payloads
+        kickMe();
+        
+        //Run DPKG on itself and readline is needed
+        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+        
+        //PRE-DEPENDS
+        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+        
+        
+        
+        //Idk why we need to do this bullshit.
+        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
         {
-            installDeb([get_debian_file(pkg) UTF8String], true);
+            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"installer.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg isEqual: @"xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+            {
+                installDeb([get_debian_file(pkg) UTF8String], true);
+            }
         }
-    }
-    
-    createLocalRepo();
-    
-    if (!doesFileExist(@"/.ziyou_bootstrap"))
-    {
-        createFile("/.ziyou_bootstrap", 0, 0644);
-        showMSG(NSLocalizedString(@"Bootstrap Extracted! We are going to reboot your device. You will need to run me again.", nil), 1, 1);
-        reboot(RB_QUICK);
+        execCmd("/usr/bin/uicache", NULL);
     } else {
+        
+        //Initial Resources
+        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+        fixFS();
+        
+        //Firmware Package
+        systemCmd("/usr/libexec/cydia/firmware.sh");
+        
+        //Jailbreakd, Pspawn, Amfid
+        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+        
+        //Start all the payloads
+        kickMe();
+        
+        //Run DPKG on itself and readline is needed
+        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+        
+        //PRE-DEPENDS
+        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+        
+        
+        
+        //Idk why we need to do this bullshit.
+        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+        {
+            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"installer.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg isEqual: @"xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+            {
+                installDeb([get_debian_file(pkg) UTF8String], true);
+            }
+        }
+        
+        createLocalRepo();
         runApt(@[@"update"]);
-        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"]
-                arrayByAddingObjectsFromArray:@[@"--reinstall", @"cydia"]]);
+        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"] arrayByAddingObjectsFromArray:@[@"--reinstall", @"cydia"]]);
         ensure_file("/.ziyou_installed", 0, 0644);
         execCmd("/usr/bin/uicache", NULL);
+        
+        
     }
 }
 
@@ -1699,100 +2148,238 @@ void installCydia()
 
 
 
-void installZebra()
+void installZebra(bool post)
 {
     
-    //Initial Resources
-    [SVProgressHUD showWithStatus:@"Extracting Resources"];
-    extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
-    fixFS();
-    
-    //Firmware Package
-    [SVProgressHUD showWithStatus:@"Configuring Firmware Package"];
-    systemCmd("/usr/libexec/cydia/firmware.sh");
-    
-    //Jailbreakd, Pspawn, Amfid
-    [SVProgressHUD showWithStatus:@"Extracting Resources"];
-    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
-    
-    //Start all the payloads
-    kickMe();
-    
-    //Run DPKG on itself and readline is needed
-    [SVProgressHUD showWithStatus:@"Running DPKG"];
-    installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
-    installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
-    
-    //PRE-DEPENDS
-    installDeb([get_debian_file(@"tar.deb") UTF8String], true);
-    installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
-    installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
-    installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
-    installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
-    installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
-    installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
-    
-    
-    removeFileIfExists("/Applications/Cydia.app"); //Zebra
-    
-    
-    //Idk why we need to do this bullshit.
-    for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+    if (post == false)
     {
-        if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"]  && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+        //Initial Resources
+        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+        fixFS();
+        
+        //Firmware Package
+        systemCmd("/usr/libexec/cydia/firmware.sh");
+        
+        //Jailbreakd, Pspawn, Amfid
+        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+        
+        //Start all the payloads
+        kickMe();
+        
+        //Run DPKG on itself and readline is needed
+        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+        
+        //PRE-DEPENDS
+        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+        
+        
+        //Idk why we need to do this bullshit.
+        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
         {
-            installDeb([get_debian_file(pkg) UTF8String], true);
+            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"installer.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"]  && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+            {
+                installDeb([get_debian_file(pkg) UTF8String], true);
+            }
         }
-    }
-    
-    createLocalRepo();
-    
-    if (!doesFileExist(@"/.ziyou_bootstrap"))
-    {
-        createFile("/.ziyou_bootstrap", 0, 0644);
-        showMSG(NSLocalizedString(@"Bootstrap Extracted! We are going to reboot your device. You will need to run me again.", nil), 1, 1);
-        reboot(RB_QUICK);
+        
+        removeFileIfExists("/Applications/Cydia.app"); //Zebra
+        execCmd("/usr/bin/uicache", NULL);
     } else {
+        
+        //Initial Resources
+        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+        fixFS();
+        
+        //Firmware Package
+        systemCmd("/usr/libexec/cydia/firmware.sh");
+        
+        //Jailbreakd, Pspawn, Amfid
+        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+        
+        //Start all the payloads
+        kickMe();
+        
+        //Run DPKG on itself and readline is needed
+        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+        
+        //PRE-DEPENDS
+        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+        
+        
+        //Idk why we need to do this bullshit.
+        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+        {
+            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"installer.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"]  && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+            {
+                installDeb([get_debian_file(pkg) UTF8String], true);
+            }
+        }
+        
+        
+        removeFileIfExists("/Applications/Cydia.app");
+        
+        createLocalRepo();
         runApt(@[@"update"]);
-        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"]
-                arrayByAddingObjectsFromArray:@[@"--reinstall", @"xyz.willy.zebra"]]);
+        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"] arrayByAddingObjectsFromArray:@[@"--reinstall", @"xyz.willy.zebra"]]);
         ensure_file("/.ziyou_installed", 0, 0644);
         execCmd("/usr/bin/uicache", NULL);
+        
+        
     }
+   
+    
 }
 
 
-
-
-void updatePayloads()
+void installInstaller5(bool post)
 {
-    [SVProgressHUD showWithStatus:@"Updating Payloads"];
-    //Backup Tweaks
-    removeFileIfExists("/usr/lib/TweakInject.bak");
-    copyMe("/usr/lib/TweakInject", "/usr/lib/TweakInject.bak");
-    removeFileIfExists("/usr/bin/sbreload");
-    extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
-    removeFileIfExists("/usr/lib/TweakInject");
-    copyMe("/usr/lib/TweakInject.bak", "/usr/lib/TweakInject");
-    kickMe();
+    if (post == false)
+    {
+        //Initial Resources
+        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+        fixFS();
+        
+        //Firmware Package
+        systemCmd("/usr/libexec/cydia/firmware.sh");
+        
+        //Jailbreakd, Pspawn, Amfid
+        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+        
+        //Start all the payloads
+        kickMe();
+        
+        //Run DPKG on itself and readline is needed
+        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+        
+        //PRE-DEPENDS
+        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+        
+        
+        //Idk why we need to do this bullshit.
+        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+        {
+            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg isEqual: @"xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+            {
+                installDeb([get_debian_file(pkg) UTF8String], true);
+            }
+        }
+        
+        removeFileIfExists("/Applications/Cydia.app"); //Zebra
+        execCmd("/usr/bin/uicache", NULL);
+    } else {
+        
+        //Initial Resources
+        extractFile(get_bootstrap_file(@"Resources.tar"), @"/");
+        fixFS();
+        
+        //Firmware Package
+        systemCmd("/usr/libexec/cydia/firmware.sh");
+        
+        //Jailbreakd, Pspawn, Amfid
+        extractFile(get_bootstrap_file(@"AIO2.tar"), @"/");
+        
+        //Start all the payloads
+        kickMe();
+        
+        //Run DPKG on itself and readline is needed
+        installDeb([get_debian_file(@"dpkg_1.18.25-9_iphoneos-arm.deb") UTF8String], true);
+        installDeb([get_debian_file(@"readline_7.0.5-2_iphoneos-arm.deb") UTF8String], true);
+        
+        //PRE-DEPENDS
+        installDeb([get_debian_file(@"tar.deb") UTF8String], true);
+        installDeb([get_debian_file(@"debianutils.deb") UTF8String], true);
+        installDeb([get_debian_file(@"darwintools.deb") UTF8String], true);
+        installDeb([get_debian_file(@"uikit.deb") UTF8String], true);
+        installDeb([get_debian_file(@"system-cmds.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia-lproj.deb") UTF8String], true);
+        installDeb([get_debian_file(@"cydia.deb") UTF8String], true);
+        
+        
+        //Idk why we need to do this bullshit.
+        for (NSString *pkg in getPackages([get_debian_file(@"Packages") UTF8String]))
+        {
+            if (![pkg  isEqual: @"tar.deb"] && ![pkg  isEqual: @"debianutils.deb"] && ![pkg  isEqual: @"darwintools.deb"] && ![pkg  isEqual: @"uikit.deb"] && ![pkg  isEqual: @"system-cmds.deb"] && ![pkg  isEqual: @"cydia.deb"] && ![pkg isEqual: @"xyz.willy.zebra_1.0_beta15_iphoneos-arm.deb"] && ![pkg  isEqual: @"readline_7.0.5-2_iphoneos-arm.deb"] && ![pkg  isEqual: @"dpkg_1.18.25-9_iphoneos-arm.deb"])
+            {
+                installDeb([get_debian_file(pkg) UTF8String], true);
+            }
+        }
+        
+        
+        removeFileIfExists("/Applications/Cydia.app");
+        
+        createLocalRepo();
+        runApt(@[@"update"]);
+        runApt([@[@"-y", @"--allow-unauthenticated", @"--allow-downgrades", @"install"] arrayByAddingObjectsFromArray:@[@"--reinstall", @"me.apptapp.installer"]]);
+        ensure_file("/.ziyou_installed", 0, 0644);
+        execCmd("/usr/bin/uicache", NULL);
+        
+        
+    }
+}
+
+void uninstallRJB()
+{
+    removeFileIfExists("/var/containers/Bundle/ziyou");
+    showMSG(NSLocalizedString(@"Ziyou Rootless Has Been Uninstalled! We are going to reboot your device.", nil), 1, 1);
+    reboot(RB_QUICK);
 }
 
 void initInstall(int packagerType)
 {
-    
+    //0 = Cydia
+    //1 = Zebra
     int f = open("/.ziyou_installed", O_RDONLY);
+    int f2 = open("/.ziyou_bootstrap", O_RDONLY);
     if (f == -1)
     {
-       
-       if (packagerType == 0)
-       {
-           installCydia();
-       } else if (packagerType == 1)
-       {
-           installZebra();
-       } else {
-           NSLog(@"IM NOT DONE! GTFO");
-       }
+        if (f2 == -1)
+        {
+            if (packagerType == 0)
+            {
+                installCydia(false);
+            } else if (packagerType == 1)
+            {
+                installZebra(false);
+            } else {
+                installInstaller5(false);
+            }
+            
+            ensure_file("/.ziyou_bootstrap", 0, 0644);
+            showMSG(NSLocalizedString(@"Jailbreak Bootstrap Installed! We are going to reboot your device.", nil), 1, 1);
+            reboot(RB_QUICK);
+            
+        } else {
+            if (packagerType == 0)
+            {
+                installCydia(true);
+            } else if (packagerType == 1)
+            {
+                installZebra(true);
+            } else {
+                installInstaller5(true);
+            }
+        }
         
     } else {
         updatePayloads();
@@ -1806,8 +2393,11 @@ void finish(bool shouldLoadTweaks)
 {
     //TODO: Daemons, etc...
     LOG("Finishing up...");
+    
+    
     removeFileIfExists("/Library/MobileSubstrate/ServerPlugins/Unrestrict.dylib");
     
+    disableStashing();
     
     removeFileIfExists("/bin/launchctl");
     copyMe("/ziyou/launchctl", "/bin/launchctl");
@@ -1815,6 +2405,11 @@ void finish(bool shouldLoadTweaks)
     
     systemCmd("chmod +x /usr/bin/sbreload");
     systemCmd("chown 0:0 /usr/bin/sbreload");
+    
+    systemCmd("chmod +x /usr/bin/rebackboardd");
+    systemCmd("chown 0:0 /usr/bin/rebackboardd");
+    
+    createFile("/tmp/.jailbroken_ziyou", 0, 0644);
     
     if (shouldLoadTweaks)
     {
@@ -1833,7 +2428,6 @@ void finish(bool shouldLoadTweaks)
                   "fi;"
                   "done");
         systemCmd("nohup bash -c \""
-                  "sleep 1 ;"
                   "launchctl stop com.apple.mDNSResponder ;"
                   "launchctl stop com.apple.backboardd"
                   "\" >/dev/null 2>&1 &");
@@ -1841,7 +2435,6 @@ void finish(bool shouldLoadTweaks)
         LOG("NOT LOADING TWEAKS...");
         ensure_file("/var/tmp/.pspawn_disable_loader", 0, 0644);
         systemCmd("nohup bash -c \""
-                  "sleep 1 ;"
                   "launchctl stop com.apple.mDNSResponder ;"
                   "launchctl stop com.apple.backboardd"
                   "\" >/dev/null 2>&1 &");

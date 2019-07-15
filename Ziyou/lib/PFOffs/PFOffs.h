@@ -63,6 +63,9 @@ typedef struct {
     kptr_t kalloc_canblock;
     
     kptr_t proc_rele;
+    
+    kptr_t IOMalloc;
+    kptr_t IOFree;
 } pf_offsets_t;
 
 extern pf_offsets_t offs;

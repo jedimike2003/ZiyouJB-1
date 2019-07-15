@@ -56,7 +56,7 @@ offsets__iphone11_8__16C50() {
 
 // A list of offset initializations by platform.
 static struct initialization offsets[] = {
-	{ "*", "*", offsets__iphone11_8__16C50 },
+    { "*", "*", offsets__iphone11_8__16C50 },
 };
 
 // ---- Address initialization --------------------------------------------------------------------

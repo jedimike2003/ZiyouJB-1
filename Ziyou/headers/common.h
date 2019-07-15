@@ -14,6 +14,9 @@ extern void NSLog(CFStringRef, ...);
 #endif
 #define ADDR                 "0x%016llx"
 
+
 typedef uint64_t kptr_t;
+#define KPTR_NULL ((kptr_t) 0)
+#define KERN_POINTER_VALID(val) ((val) >= 0xffff000000000000 && (val) != 0xffffffffffffffff)
 
 #endif

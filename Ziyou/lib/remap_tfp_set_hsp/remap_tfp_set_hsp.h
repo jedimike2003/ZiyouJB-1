@@ -24,5 +24,4 @@ extern int F_OFFS;
 uint64_t get_address_of_port(pid_t pid, mach_port_t port);
 int setHSP4(void);
 uint64_t get_proc_struct_for_pid(pid_t pid);
-uint64_t get_address_of_port(pid_t pid, mach_port_t port);
 #endif /* remap_tfp_set_hsp_h */

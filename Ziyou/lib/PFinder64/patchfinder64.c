@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
+#include "mac_policy.h"
 #include <sys/syscall.h>
 #include "patchfinder64.h"
 
@@ -1060,6 +1061,20 @@ find_trustcache(void)
     return val + kerndumpbase;
 }
 
+addr_t find_IOMalloc(void)
+{
+    addr_t start = find_smalloc();
+    if (!start) return 0;
+    start -= kerndumpbase;
+    
+    addr_t call = step64(kernel, start + 4, 0x50, INSN_CALL);
+    if (!call) return 0;
+    
+    return follow_stub(kernel, call);
+}
+
+
+
 addr_t
 find_amficache(void)
 {
@@ -2087,25 +2102,6 @@ addr_t find_handler_map(void)
     return addr + kerndumpbase;
 }
 
-addr_t find_policy_conf(void)
-{
-    addr_t kmod_start = find_kmod_start();
-    if (!kmod_start) return 0;
-    kmod_start -= kerndumpbase;
-    
-    addr_t eof = step64(kernel, kmod_start, 0x500, 0x910003FF, 0xFF0003FF);
-    if (!eof) return 0;
-    
-    addr_t insn = step64(kernel, kmod_start, eof-kmod_start, 0xD2800002, 0xFFFFFFFF);
-    if (!insn) return 0;
-    
-    addr_t ref = step64_back(kernel, insn, 0x10, 0x90000000, 0x9F00001F);
-    if (!ref) return 0;
-    
-    addr_t addr = calc64(kernel, ref, ref+8, 0);
-    if (!addr) return 0;
-    return addr + kerndumpbase;
-}
 
 addr_t find_sb_ustate_create(void)
 {
@@ -2861,6 +2857,190 @@ addr_t find_flow_divert_connect_out() {
     
     return start + kerndumpbase;
 }
+
+
+
+
+
+
+#define find_mpo(name) find_mpo_entry(offsetof(struct mac_policy_ops, mpo_ ##name))
+
+addr_t find_policy_conf(void)
+{
+    addr_t kmod_start = find_kmod_start();
+    if (!kmod_start) return 0;
+    kmod_start -= kerndumpbase;
+    
+    addr_t eof = step64(kernel, kmod_start, 0x500, 0x910003FF, 0xFF0003FF);
+    if (!eof) return 0;
+    
+    addr_t insn = step64(kernel, kmod_start, eof-kmod_start, 0xD2800002, 0xFFFFFFFF);
+    if (!insn) return 0;
+    
+    addr_t ref = step64_back(kernel, insn, 0x10, 0x90000000, 0x9F00001F);
+    if (!ref) return 0;
+    
+    addr_t addr = calc64(kernel, ref, ref+8, 0);
+    if (!addr) return 0;
+    return addr + kerndumpbase;
+}
+
+addr_t find_policy_ops(void)
+{
+    static struct mac_policy_conf *conf = NULL;
+    if (!conf) {
+        addr_t policy_conf_ref = find_policy_conf();
+        if (!policy_conf_ref) return 0;
+        conf = (struct mac_policy_conf *)(policy_conf_ref - kerndumpbase + kernel);
+    }
+    
+    addr_t ops = conf->mpc_ops;
+    if (!ops) return 0;
+    return remove_pac(ops);
+}
+
+addr_t find_mpo_entry(addr_t offset)
+{
+    addr_t ops = find_policy_ops();
+    if (!ops) return 0;
+    ops -= kerndumpbase;
+    
+    addr_t opref = *(addr_t *)(ops + kernel + offset);
+    if (!opref) return 0;
+    return remove_pac(opref);
+}
+
+
+addr_t find_hook_policy_syscall(int n)
+{
+    addr_t policy_syscall = find_mpo(policy_syscall);
+    if (!policy_syscall) return 0;
+    policy_syscall -= kerndumpbase;
+    
+    //uint32_t insn = *(uint32_t *)(kernel + policy_syscall);
+    uint32_t insn = step64(kernel, policy_syscall, 0x100, 0x7100003F, 0xFFC003FF);
+    if (!insn) return 0;
+    int len = (*(int*)(kernel+insn)>>10) & 0xFFF;
+    if (n > len) return 0;
+    
+    addr_t ref = step64(kernel, insn, 0x20, 0x10000000, 0x9F000000);
+    if (!ref) ref = step64(kernel, insn, 0x20, INSN_ADRP);
+    if (!ref) return 0;
+    
+    int reg = *(uint32_t *)(kernel + ref) & 0x1f;
+    addr_t jptbl = calc64(kernel, ref, ref+8, reg);
+    if (!jptbl) return 0;
+    
+    ref = jptbl + *(int *)(kernel + jptbl + (n<<2));
+    addr_t call = step64(kernel, ref, 0x50, INSN_B);
+    if (!call) return 0;
+    
+    addr_t func = follow_call64(kernel, call);
+    if (!func) return 0;
+    return func + kerndumpbase;
+}
+
+addr_t find_syscall_set_profile(void)
+{
+    return find_hook_policy_syscall(0);
+}
+
+addr_t find_syscall_check_sandbox(void)
+{
+    return find_hook_policy_syscall(2);
+}
+
+addr_t find_sandbox_set_container_copyin(void)
+{
+    addr_t syscall_set_profile = find_syscall_set_profile();
+    if (!syscall_set_profile) return 0;
+    syscall_set_profile -= kerndumpbase;
+    
+    // SUB SP, SP #imm
+    addr_t next_func = step64(kernel, syscall_set_profile+8, 0x1000, 0x510003FF, 0x7F8003FF);
+    if (!next_func) return 0;
+    
+    addr_t call = next_func;
+    for (int i=0; i<3; i++) {
+        call = step64_back(kernel, call-4, call-syscall_set_profile, INSN_CALL);
+        if (!call) return 0;
+    }
+    
+    addr_t func = follow_call64(kernel, call);
+    if (!func) return 0;
+    return func + kerndumpbase;
+}
+
+addr_t find_platform_set_container(void)
+{
+    addr_t sandbox_set_container_copyin = find_sandbox_set_container_copyin();
+    if (!sandbox_set_container_copyin) return 0;
+    sandbox_set_container_copyin -= kerndumpbase;
+    
+    addr_t call = sandbox_set_container_copyin;
+    for (int i=0; i<3; i++) {
+        call = step64(kernel, call+4, 0x100, INSN_CALL);
+        if (!call) return 0;
+    }
+    
+    addr_t func = follow_call64(kernel, call);
+    if (!func) return 0;
+    return func + kerndumpbase;
+}
+
+addr_t find_extension_release(void)
+{
+    addr_t platform_set_container = find_platform_set_container();
+    if (!platform_set_container) return 0;
+    platform_set_container -= kerndumpbase;
+    
+    addr_t call = platform_set_container;
+    for (int i=0; i<4; i++) {
+        call = step64(kernel, call+8, 0x100, INSN_CALL);
+        if (!call) return 0;
+    }
+    
+    addr_t func = follow_call64(kernel, call);
+    if (!func) return 0;
+    return func + kerndumpbase;
+}
+
+addr_t find_sfree(void)
+{
+    static addr_t func=0;
+    if (func) return func + kerndumpbase;
+    
+    addr_t extension_release = find_extension_release();
+    if (!extension_release) return 0;
+    extension_release -= kerndumpbase;
+    
+    addr_t call = step64(kernel, extension_release+4, 0x100, INSN_CALL);
+    if (!call) return 0;
+    
+    func = follow_call64(kernel, call);
+    if (!func) return 0;
+    return func + kerndumpbase;
+}
+
+addr_t find_IOFree(void)
+{
+    addr_t start = find_sfree();
+    if (!start) return 0;
+    start -= kerndumpbase;
+    
+    addr_t call=start;
+    for (int i=0; i<2; i++) {
+        call = step64(kernel, call + 4, 0x100, INSN_CALL);
+        if (!call) return 0;
+    }
+    
+    return follow_stub(kernel, call);
+}
+
+
+
+
+
 /*
  *
  *

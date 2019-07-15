@@ -11,6 +11,7 @@
 #define utils_h
 
 #define showMSG(msg, wait, destructive) showAlert(@"Ziyou", msg, wait, destructive)
+#define showPopup(msg, wait, destructive) showThePopup(@"", msg, wait, destructive)
 #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 #define _assert(test, message, fatal) do \
 if (!(test)) { \
@@ -21,9 +22,8 @@ while (false)
 
 void runMachswap(void);
 void getOffsets(void);
-void rootMe(int both, uint64_t proc);
+void rootMe(uint64_t proc);
 void unsandbox(uint64_t proc);
-uint64_t selfproc(void);
 void remountFS(bool shouldRestore);
 void restoreRootFS(void);
 int trust_file(NSString *path);
@@ -46,5 +46,20 @@ int getPackagerType(void);
 void initSettingsIfNotExist(void);
 void saveCustomSetting(NSString *setting, int settingResult);
 BOOL shouldRestoreFS(void);
+BOOL isRootless(void);
+
+
+//ROOTLESS JB
+void createWorkingDir_rootless(void);
+void saveOffs_rootless(void);
+void uninstallRJB(void);
+
+//EXPLOIT
+int autoSelectExploit(void);
+
+//Nonce
+void setNonce(const char *nonce, bool shouldSet);
+NSString* getBootNonce(void);
+bool shouldSetNonce(void);
 
 #endif /* utils_h */

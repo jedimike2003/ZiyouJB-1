@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SVProgressHUD.h>
+#include "utils/utils.h"
 
 @interface ViewController : UIViewController
 
@@ -26,53 +26,26 @@
 @property (strong, nonatomic) IBOutlet UISwitch *loadTweakSwitch;
 
 
-//-------UI STUFF--------//
-
-//SWITCH FUNCTIONS
-- (IBAction)Restore_FS_Switch_Action:(UISwitch *)sender;
-
-//THE EXPLOIT BUTTONS outlet
-@property (weak, nonatomic) IBOutlet UIButton *VS_Outlet;
-@property (weak, nonatomic) IBOutlet UIButton *MS1_OUTLET;
-@property (weak, nonatomic) IBOutlet UIButton *MS2_Outlet;
-
-//the exploit buttons action
-
-- (IBAction)MS1_ACTION:(UIButton *)sender;
-- (IBAction)MS2_ACTION:(UIButton *)sender;
-- (IBAction)VS_ACTION:(UIButton *)sender;
-
-//THE PACKAGE MANAGER BUTTONS outlet
-@property (weak, nonatomic) IBOutlet UIButton *Cydia_Outlet;
-@property (weak, nonatomic) IBOutlet UIButton *Zebra_Outlet;
-@property (weak, nonatomic) IBOutlet UIButton *Sileo_Outlet;
-
-//the package manager buttons action
-- (IBAction)Cydia_Button:(UIButton *)sender;
-- (IBAction)Zebra_Button:(UIButton *)sender;
-- (IBAction)Sileo_Button:(UIButton *)sender;
-
-
 @end
 
 static inline void showAlertWithCancel(NSString *title, NSString *message, Boolean wait, Boolean destructive, NSString *cancel) {
     dispatch_semaphore_t semaphore;
     if (wait)
-        semaphore = dispatch_semaphore_create(0);
+    semaphore = dispatch_semaphore_create(0);
     
     dispatch_async(dispatch_get_main_queue(), ^{
         ViewController *controller = [ViewController sharedController];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *OK = [UIAlertAction actionWithTitle:@"Okay" style:destructive ? UIAlertActionStyleDestructive : UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             if (wait)
-                dispatch_semaphore_signal(semaphore);
+            dispatch_semaphore_signal(semaphore);
         }];
         [alertController addAction:OK];
         [alertController setPreferredAction:OK];
         if (cancel) {
             UIAlertAction *abort = [UIAlertAction actionWithTitle:cancel style:destructive ? UIAlertActionStyleDestructive : UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                 if (wait)
-                    dispatch_semaphore_signal(semaphore);
+                dispatch_semaphore_signal(semaphore);
             }];
             [alertController addAction:abort];
             [alertController setPreferredAction:abort];
@@ -80,13 +53,49 @@ static inline void showAlertWithCancel(NSString *title, NSString *message, Boole
         [controller presentViewController:alertController animated:YES completion:nil];
     });
     if (wait)
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+}
+
+static inline void showAlertPopup(NSString *title, NSString *message, Boolean wait, Boolean destructive, NSString *cancel) {
+    dispatch_semaphore_t semaphore;
+    if (wait)
+    semaphore = dispatch_semaphore_create(0);
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ViewController *controller = [ViewController sharedController];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [controller presentViewController:alertController animated:YES completion:nil];
+    });
+    if (wait)
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 
+
 static inline void showAlert(NSString *title, NSString *message, Boolean wait, Boolean destructive) {
-    [SVProgressHUD dismiss];//have to include it
+    //dispatch_async(dispatch_get_main_queue(), ^{
+    //    ViewController *controller = [ViewController sharedController];
+    //    [controller dismissViewControllerAnimated:false completion:nil];
+    //});
+    
     showAlertWithCancel(title, message, wait, destructive, nil);
+}
+
+
+
+static inline void showThePopup(NSString *title, NSString *message, Boolean wait, Boolean destructive) {
+    //dispatch_async(dispatch_get_main_queue(), ^{
+     //   ViewController *controller = [ViewController sharedController];
+    //    [controller dismissViewControllerAnimated:false completion:nil];
+   // });
+    
+    showAlertPopup(title, message, wait, destructive, nil);
+}
+
+static inline void disableRootFS() {
+    ViewController *controller = [ViewController sharedController];
+    [[controller restoreFSSwitch] setOn:false];
+    saveCustomSetting(@"RestoreFS", 1);
 }
 
 

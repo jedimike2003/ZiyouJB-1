@@ -17,3 +17,8 @@ void setA12(uint a12)
 {
     A12 = a12;
 }
+
+void set_tfp0(mach_port_t tfp0wo)
+{
+    tfp0 = tfp0wo;
+}

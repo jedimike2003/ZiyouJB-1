@@ -265,6 +265,13 @@ int *create_pipes(size_t *pipe_count);
  */
 void close_pipes(int *pipefds, size_t pipe_count);
 
+
+
+
+size_t ool_ports_spray_size(mach_port_t *holding_ports, size_t *holding_port_count, size_t message_size, const mach_port_t *ool_ports, size_t ool_port_count, mach_msg_type_name_t ool_disposition, size_t spray_size);
+
+
+
 /*
  * pipe_spray
  *

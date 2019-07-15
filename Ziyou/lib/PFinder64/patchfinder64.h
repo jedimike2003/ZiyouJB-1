@@ -24,7 +24,8 @@ enum string_bases {
     string_base_data,
     string_base_const
 };
-
+uint64_t find_IOMalloc(void);
+uint64_t find_IOFree(void);
 uint64_t find_register_value(uint64_t where, int reg);
 uint64_t find_reference(uint64_t to, int n, enum text_bases base);
 uint64_t find_strref(const char *string, int n, enum string_bases string_base, bool full_match, bool ppl_base);

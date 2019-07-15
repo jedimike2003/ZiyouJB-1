@@ -9,6 +9,7 @@
 #include "pac.h"
 #include "user_client.h"
 #include "log.h"
+#include <mach/message.h>
 
 // ---- Public API --------------------------------------------------------------------------------
 
