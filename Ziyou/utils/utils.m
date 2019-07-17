@@ -1,9 +1,9 @@
 //
 //  utils.m
-//  Slice
+//  Ziyou
 //
 //  Created by Brandon Plank on 5/8/19.
-//  Copyright © 2019 Slice Team. All rights reserved.
+//  Copyright © 2019 Ziyou Team. All rights reserved.
 //
 
 #define KADD_SEARCH 0xfffffff007004000
@@ -2048,7 +2048,7 @@ void fixFS()
     }
     _assert(ensure_symlink("/usr/lib", "/usr/lib/_ncurses"), message, true);
     _assert(ensure_directory("/Library/Caches", 0, S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO), message, true);
-    LOG("[Slice] Finished Fixing Filesystem!");
+    LOG("[Ziyou] Finished Fixing Filesystem!");
 }
 
 
