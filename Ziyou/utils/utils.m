@@ -1206,6 +1206,15 @@ void restoreRootFS()
     
     
     disableRootFS();
+    
+    char *targettype = sysctlWithName("hw.targettype");
+    _assert(targettype != NULL, localize(@"Unable to get hardware targettype."), true);
+    NSString *const jetsamFile = [NSString stringWithFormat:@"/System/Library/LaunchDaemons/com.apple.jetsamproperties.%s.plist", targettype];
+    free(targettype);
+    targettype = NULL;
+    _assert(mod_plist_file(jetsamFile, ^(id plist) {
+        plist[@"Version4"][@"System"][@"Override"][@"Global"][@"UserHighWaterMark"] = nil;
+    }), localize(@"Unable to update Jetsam plist to restore memory limit."), true);
 
     
     LOG("Rebooting...");
@@ -2379,6 +2388,16 @@ void initInstall(int packagerType)
             } else {
                 installInstaller5(true);
             }
+            
+            char *targettype = sysctlWithName("hw.targettype");
+            _assert(targettype != NULL, localize(@"Unable to get hardware targettype."), true);
+            NSString *const jetsamFile = [NSString stringWithFormat:@"/System/Library/LaunchDaemons/com.apple.jetsamproperties.%s.plist", targettype];
+            free(targettype);
+            targettype = NULL;
+            _assert(mod_plist_file(jetsamFile, ^(id plist) {
+                plist[@"Version4"][@"System"][@"Override"][@"Global"][@"UserHighWaterMark"] = [NSNumber numberWithInteger:[plist[@"Version4"][@"PListDevice"][@"MemoryCapacity"] integerValue]];
+            }), localize(@"Unable to update Jetsam plist to increase memory limit."), true);
+            
         }
         
     } else {
