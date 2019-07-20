@@ -22,7 +22,6 @@
 #include "ms_offs.h"
 #include "bypass.h"
 #include "unlocknvram.h"
-#include "iosurface.h"
 #include "machswap.h"
 #include "KernelUtils.h"
 #include "remap_tfp_set_hsp.h"
@@ -35,7 +34,7 @@
 #include "OffsetHolder.h"
 #include "offsets.h"
 #include <sys/mount.h>
-#include "runSockPuppet.h"
+#include "exploit.h"
 #include <spawn.h>
 #include <pwd.h>
 #include "kernel_exec.h"
@@ -430,8 +429,8 @@ void runVoucherSwap() {
     
     if (MACH_PORT_VALID(tfp0)) {
         
-        kernel_slide_init();
-        kbase = (kernel_slide + KADD_SEARCH);
+        kbase = find_kernel_base();
+        kernel_slide = (kbase - KADD_SEARCH);
         
         runShenPatchOWO = true;
         
@@ -449,13 +448,18 @@ void runVoucherSwap() {
     
 }
 
-void runSockPuppetExploit()
+void runSockPuppet()
 {
-    runSockPuppet();
     
-    set_tfp0(kernel_task_port);
+    set_tfp0(get_tfp0());
     
-    runShenPatchOWO = true;
+    if (MACH_PORT_VALID(tfp0))
+    {
+        kernel_slide_init();
+        kbase = (kernel_slide + KADD_SEARCH);
+        
+        runShenPatchOWO = true;
+    }
     
     NSLog(@"%@", [NSString stringWithFormat:@"TFP0: 0x%x", tfp0]);
     NSLog(@"%@", [NSString stringWithFormat:@"KERNEL BASE: %llx", kbase]);

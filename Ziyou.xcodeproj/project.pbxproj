@@ -60,16 +60,10 @@
 		B8C0B80A228385DA0030AE1E /* ImportantHolders.c in Sources */ = {isa = PBXBuildFile; fileRef = B8C0B808228385DA0030AE1E /* ImportantHolders.c */; };
 		B8C4ECE822920715008F9068 /* bypass.m in Sources */ = {isa = PBXBuildFile; fileRef = B8C4ECE622920715008F9068 /* bypass.m */; };
 		B8C4ECEF22920824008F9068 /* OSObj.c in Sources */ = {isa = PBXBuildFile; fileRef = B8C4ECED22920824008F9068 /* OSObj.c */; };
-		B8C7055722D7CF4C00DA550D /* iosurface.c in Sources */ = {isa = PBXBuildFile; fileRef = B8C7055522D7CF4C00DA550D /* iosurface.c */; };
-		B8C7055B22D7D02700DA550D /* exploit.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7055922D7D02700DA550D /* exploit.cc */; };
-		B8C7055F22D7D04900DA550D /* pipe.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7055D22D7D04900DA550D /* pipe.cc */; };
-		B8C7056222D7D06600DA550D /* stage1.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056022D7D06600DA550D /* stage1.cc */; };
-		B8C7056522D7D08500DA550D /* dangling_options.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056322D7D08500DA550D /* dangling_options.cc */; };
-		B8C7056822D7D0A100DA550D /* spray.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056622D7D0A100DA550D /* spray.cc */; };
-		B8C7056B22D7D0BD00DA550D /* port.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7056922D7D0BD00DA550D /* port.cc */; };
-		B8C7057422D7D2FE00DA550D /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = B8C7057222D7D2FE00DA550D /* util.cc */; };
-		B8C7057722D7D4CA00DA550D /* runSockPuppet.mm in Sources */ = {isa = PBXBuildFile; fileRef = B8C7057522D7D4CA00DA550D /* runSockPuppet.mm */; };
 		B8D6CFF022D8DCC800437880 /* shenanigans.m in Sources */ = {isa = PBXBuildFile; fileRef = B8D6CFEE22D8DCC800437880 /* shenanigans.m */; };
+		B8E7D08A22E3B75C00D1D85F /* exploit.c in Sources */ = {isa = PBXBuildFile; fileRef = B8E7D08822E3B75C00D1D85F /* exploit.c */; };
+		B8E7D08D22E3B79300D1D85F /* exploit_utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = B8E7D08B22E3B79300D1D85F /* exploit_utilities.c */; };
+		B8E7D09022E3B7B900D1D85F /* iosurface.c in Sources */ = {isa = PBXBuildFile; fileRef = B8E7D08E22E3B7B900D1D85F /* iosurface.c */; };
 		B8E8A9BA22891CE00049F87D /* insert_dylib.c in Sources */ = {isa = PBXBuildFile; fileRef = B8E8A9B822891CE00049F87D /* insert_dylib.c */; };
 		B8F2CF9022DBA25000BEB355 /* unlocknvram.c in Sources */ = {isa = PBXBuildFile; fileRef = B8F2CF8E22DBA25000BEB355 /* unlocknvram.c */; };
 		B8FB44EE2284F34A00CEDF47 /* amfi_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = B8FB44ED2284F34A00CEDF47 /* amfi_utils.m */; };
@@ -179,27 +173,14 @@
 		B8C4ECE92292074D008F9068 /* cs_blob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cs_blob.h; sourceTree = "<group>"; };
 		B8C4ECED22920824008F9068 /* OSObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = OSObj.c; sourceTree = "<group>"; };
 		B8C4ECEE22920824008F9068 /* OSObj.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSObj.h; sourceTree = "<group>"; };
-		B8C7055522D7CF4C00DA550D /* iosurface.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = iosurface.c; sourceTree = "<group>"; };
-		B8C7055622D7CF4C00DA550D /* iosurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iosurface.h; sourceTree = "<group>"; };
-		B8C7055822D7CF7700DA550D /* OSUnserializeBinary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSUnserializeBinary.h; sourceTree = "<group>"; };
-		B8C7055922D7D02700DA550D /* exploit.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = exploit.cc; sourceTree = "<group>"; };
-		B8C7055A22D7D02700DA550D /* exploit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exploit.h; sourceTree = "<group>"; };
-		B8C7055D22D7D04900DA550D /* pipe.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pipe.cc; sourceTree = "<group>"; };
-		B8C7055E22D7D04900DA550D /* pipe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pipe.h; sourceTree = "<group>"; };
-		B8C7056022D7D06600DA550D /* stage1.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stage1.cc; sourceTree = "<group>"; };
-		B8C7056122D7D06600DA550D /* stage1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stage1.h; sourceTree = "<group>"; };
-		B8C7056322D7D08500DA550D /* dangling_options.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = dangling_options.cc; sourceTree = "<group>"; };
-		B8C7056422D7D08500DA550D /* dangling_options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dangling_options.h; sourceTree = "<group>"; };
-		B8C7056622D7D0A100DA550D /* spray.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = spray.cc; sourceTree = "<group>"; };
-		B8C7056722D7D0A100DA550D /* spray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spray.h; sourceTree = "<group>"; };
-		B8C7056922D7D0BD00DA550D /* port.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = port.cc; sourceTree = "<group>"; };
-		B8C7056A22D7D0BD00DA550D /* port.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = port.h; sourceTree = "<group>"; };
-		B8C7057222D7D2FE00DA550D /* util.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = util.cc; sourceTree = "<group>"; };
-		B8C7057322D7D2FE00DA550D /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		B8C7057522D7D4CA00DA550D /* runSockPuppet.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = runSockPuppet.mm; sourceTree = "<group>"; };
-		B8C7057622D7D4CA00DA550D /* runSockPuppet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = runSockPuppet.h; sourceTree = "<group>"; };
 		B8D6CFEE22D8DCC800437880 /* shenanigans.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = shenanigans.m; sourceTree = "<group>"; };
 		B8D6CFEF22D8DCC800437880 /* shenanigans.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shenanigans.h; sourceTree = "<group>"; };
+		B8E7D08822E3B75C00D1D85F /* exploit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = exploit.c; sourceTree = "<group>"; };
+		B8E7D08922E3B75C00D1D85F /* exploit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exploit.h; sourceTree = "<group>"; };
+		B8E7D08B22E3B79300D1D85F /* exploit_utilities.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = exploit_utilities.c; sourceTree = "<group>"; };
+		B8E7D08C22E3B79300D1D85F /* exploit_utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = exploit_utilities.h; sourceTree = "<group>"; };
+		B8E7D08E22E3B7B900D1D85F /* iosurface.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = iosurface.c; sourceTree = "<group>"; };
+		B8E7D08F22E3B7B900D1D85F /* iosurface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iosurface.h; sourceTree = "<group>"; };
 		B8E8A9B822891CE00049F87D /* insert_dylib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = insert_dylib.c; sourceTree = "<group>"; };
 		B8E8A9B922891CE00049F87D /* insert_dylib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = insert_dylib.h; sourceTree = "<group>"; };
 		B8E8A9BB22891DFD0049F87D /* kernel_structs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kernel_structs.h; sourceTree = "<group>"; };
@@ -486,8 +467,6 @@
 			isa = PBXGroup;
 			children = (
 				B8C0B807228385CE0030AE1E /* holders */,
-				B8C7057522D7D4CA00DA550D /* runSockPuppet.mm */,
-				B8C7057622D7D4CA00DA550D /* runSockPuppet.h */,
 				88EFC47622836924005FA5BB /* utils.m */,
 				88EFC47822836934005FA5BB /* utils.h */,
 				B8B3F9932283B36E000E8427 /* KernelUtils.c */,
@@ -524,23 +503,12 @@
 		B8C7055322D7CF3600DA550D /* SockPuppet */ = {
 			isa = PBXGroup;
 			children = (
-				B8C7055522D7CF4C00DA550D /* iosurface.c */,
-				B8C7055622D7CF4C00DA550D /* iosurface.h */,
-				B8C7055822D7CF7700DA550D /* OSUnserializeBinary.h */,
-				B8C7055922D7D02700DA550D /* exploit.cc */,
-				B8C7055A22D7D02700DA550D /* exploit.h */,
-				B8C7055D22D7D04900DA550D /* pipe.cc */,
-				B8C7055E22D7D04900DA550D /* pipe.h */,
-				B8C7056022D7D06600DA550D /* stage1.cc */,
-				B8C7056122D7D06600DA550D /* stage1.h */,
-				B8C7056322D7D08500DA550D /* dangling_options.cc */,
-				B8C7056422D7D08500DA550D /* dangling_options.h */,
-				B8C7056622D7D0A100DA550D /* spray.cc */,
-				B8C7056722D7D0A100DA550D /* spray.h */,
-				B8C7056922D7D0BD00DA550D /* port.cc */,
-				B8C7056A22D7D0BD00DA550D /* port.h */,
-				B8C7057222D7D2FE00DA550D /* util.cc */,
-				B8C7057322D7D2FE00DA550D /* util.h */,
+				B8E7D08822E3B75C00D1D85F /* exploit.c */,
+				B8E7D08922E3B75C00D1D85F /* exploit.h */,
+				B8E7D08B22E3B79300D1D85F /* exploit_utilities.c */,
+				B8E7D08C22E3B79300D1D85F /* exploit_utilities.h */,
+				B8E7D08E22E3B7B900D1D85F /* iosurface.c */,
+				B8E7D08F22E3B7B900D1D85F /* iosurface.h */,
 			);
 			path = SockPuppet;
 			sourceTree = "<group>";
@@ -672,13 +640,12 @@
 				B8FB44F62284F6F200CEDF47 /* ArchiveFile.m in Sources */,
 				B8B3F98F2283B2EE000E8427 /* offsets.m in Sources */,
 				B8B3F9782283B205000E8427 /* log.m in Sources */,
-				B8C7057722D7D4CA00DA550D /* runSockPuppet.mm in Sources */,
+				B8E7D09022E3B7B900D1D85F /* iosurface.c in Sources */,
 				B8B3F9802283B205000E8427 /* kernel_slide.c in Sources */,
 				B8B3F97F2283B205000E8427 /* parameters.c in Sources */,
-				B8C7057422D7D2FE00DA550D /* util.cc in Sources */,
 				B883471E2284DC7300DBA046 /* libsnappy.c in Sources */,
-				B8C7056822D7D0A100DA550D /* spray.cc in Sources */,
 				B8B3F9792283B205000E8427 /* kexecute.c in Sources */,
+				B8E7D08D22E3B79300D1D85F /* exploit_utilities.c in Sources */,
 				B88347192284DBCE00DBA046 /* vnode_utils.m in Sources */,
 				B89BAA1622826A9F00964B6F /* ViewController.m in Sources */,
 				88E01545228B629A00F9E519 /* voucher_swap.c in Sources */,
@@ -691,29 +658,24 @@
 				B8FB44EE2284F34A00CEDF47 /* amfi_utils.m in Sources */,
 				B8B3F98C2283B2CB000E8427 /* find_port.c in Sources */,
 				B8B3F9772283B205000E8427 /* kernel_call.c in Sources */,
-				B8C7055F22D7D04900DA550D /* pipe.cc in Sources */,
 				B8B3F9982283B500000E8427 /* OffsetHolder.m in Sources */,
 				B8C4ECE822920715008F9068 /* bypass.m in Sources */,
-				B8C7056522D7D08500DA550D /* dangling_options.cc in Sources */,
 				B8F2CF9022DBA25000BEB355 /* unlocknvram.c in Sources */,
 				B8B3F9762283B205000E8427 /* platform_match.c in Sources */,
 				B8B3F9952283B36E000E8427 /* KernelUtils.c in Sources */,
 				B8B3F9752283B205000E8427 /* pac.c in Sources */,
 				B8C0B7FE22837D990030AE1E /* machswap.m in Sources */,
 				B862F49F22C8261F003B79E6 /* SettingsViewController.m in Sources */,
+				B8E7D08A22E3B75C00D1D85F /* exploit.c in Sources */,
 				B89BAA1322826A9F00964B6F /* AppDelegate.m in Sources */,
 				B8C4ECEF22920824008F9068 /* OSObj.c in Sources */,
 				B8B3F97D2283B205000E8427 /* user_client.c in Sources */,
-				B8C7056222D7D06600DA550D /* stage1.cc in Sources */,
 				B8D6CFF022D8DCC800437880 /* shenanigans.m in Sources */,
-				B8C7055722D7CF4C00DA550D /* iosurface.c in Sources */,
 				B8E8A9BA22891CE00049F87D /* insert_dylib.c in Sources */,
 				B8C0B80A228385DA0030AE1E /* ImportantHolders.c in Sources */,
 				88EFC47722836924005FA5BB /* utils.m in Sources */,
 				B8346CDD2283BA2F009F6311 /* PFOffs.c in Sources */,
-				B8C7055B22D7D02700DA550D /* exploit.cc in Sources */,
 				B866F3CE228B7A7200616377 /* machswap2.m in Sources */,
-				B8C7056B22D7D0BD00DA550D /* port.cc in Sources */,
 				B8FB44FE2284F7C600CEDF47 /* ArchiveUtils.m in Sources */,
 				B8346CE42283BE99009F6311 /* lzssdec.cpp in Sources */,
 				B8B3F97B2283B205000E8427 /* platform.c in Sources */,
