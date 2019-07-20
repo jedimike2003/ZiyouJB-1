@@ -429,8 +429,8 @@ void runVoucherSwap() {
     
     if (MACH_PORT_VALID(tfp0)) {
         
-        kbase = find_kernel_base();
-        kernel_slide = (kbase - KADD_SEARCH);
+        kernel_slide_init();
+        kbase = (kernel_slide + KADD_SEARCH);
         
         runShenPatchOWO = true;
         
@@ -455,10 +455,12 @@ void runSockPuppet()
     
     if (MACH_PORT_VALID(tfp0))
     {
-        kernel_slide_init();
-        kbase = (kernel_slide + KADD_SEARCH);
+        
+        kbase = find_kernel_base();
+        kernel_slide = (kbase - KADD_SEARCH);
         
         runShenPatchOWO = true;
+        
     }
     
     NSLog(@"%@", [NSString stringWithFormat:@"TFP0: 0x%x", tfp0]);
