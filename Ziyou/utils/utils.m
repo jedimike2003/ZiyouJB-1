@@ -455,6 +455,10 @@ void runSockPuppet()
     
     if (MACH_PORT_VALID(tfp0))
     {
+        //ROOT US
+        
+        rootMe(selfproc());
+        unsandbox(selfproc());
         
         kbase = find_kernel_base();
         kernel_slide = (kbase - KADD_SEARCH);
