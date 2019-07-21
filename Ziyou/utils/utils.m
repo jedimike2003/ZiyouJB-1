@@ -455,13 +455,8 @@ void runSockPuppet()
     
     if (MACH_PORT_VALID(tfp0))
     {
-        //ROOT US
-        
-        rootMe(selfproc());
-        unsandbox(selfproc());
-        
-        kbase = find_kernel_base();
-        kernel_slide = (kbase - KADD_SEARCH);
+        kernel_slide_init();
+        kbase = (kernel_slide + KADD_SEARCH);
         
         runShenPatchOWO = true;
         
