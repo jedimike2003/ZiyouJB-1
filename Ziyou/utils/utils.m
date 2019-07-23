@@ -338,6 +338,17 @@ uint64_t selfproc() {
     return proc;
 }
 
+uint64_t fport(mach_port_name_t port)
+{
+    uint64_t task_port_addr = task_self_addr();
+    uint64_t task_addr = ReadKernel64(task_port_addr + koffset(KSTRUCT_OFFSET_IPC_PORT_IP_KOBJECT));
+    uint64_t itk_space = ReadKernel64(task_addr + koffset(KSTRUCT_OFFSET_TASK_ITK_SPACE));
+    uint64_t is_table = ReadKernel64(itk_space + koffset(KSTRUCT_OFFSET_IPC_SPACE_IS_TABLE));
+    uint32_t port_index = port >> 8;
+    const int sizeof_ipc_entry_t = 0x18;
+    uint64_t port_addr = ReadKernel64(is_table + (port_index * sizeof_ipc_entry_t));
+    return port_addr;
+}
 
 
 void platformize(uint64_t proc) {
@@ -455,8 +466,8 @@ void runSockPuppet()
     
     if (MACH_PORT_VALID(tfp0))
     {
-        kernel_slide_init();
-        kbase = (kernel_slide + KADD_SEARCH);
+        kbase = find_kernel_base();
+        kernel_slide = (kbase - KADD_SEARCH);;
         
         runShenPatchOWO = true;
         
