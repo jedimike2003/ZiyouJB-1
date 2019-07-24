@@ -433,7 +433,6 @@ uint64_t find_kernel_base() {
     return 0;
 }
 
-uint64_t selfproc_cached;
 
 void runVoucherSwap() {
     voucher_swap();
@@ -801,6 +800,11 @@ void getOffsets() {
     
     LOG("Initializing patchfinder64...");
     const char *original_kernel_cache_path = "/System/Library/Caches/com.apple.kernelcaches/kernelcache";
+    
+    if (!canRead(original_kernel_cache_path))
+    {
+        swap_sandbox(selfproc(), KPTR_NULL);
+    }
     
     NSString *homeDirectory = NSHomeDirectory();
     

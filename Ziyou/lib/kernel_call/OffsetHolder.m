@@ -329,15 +329,11 @@ uint32_t koffset(enum kernel_offset offset)
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        LOG("kCFCoreFoundationVersionNumber: %f", kCFCoreFoundationVersionNumber);
         if (kCFCoreFoundationVersionNumber >= 1535.12) {
-            LOG("offsets selected for iOS 12.0 or above");
             offsets = kernel_offsets_12_0;
         } else if (kCFCoreFoundationVersionNumber >= 1452.23) {
-            LOG("offsets selected for iOS 11.3 or above");
             offsets = kernel_offsets_11_3;
         } else if (kCFCoreFoundationVersionNumber >= 1443.00) {
-            LOG("offsets selected for iOS 11.0 to 11.2.6");
             offsets = kernel_offsets_11_0;
         } else {
             LOG("iOS version too low, 11.0 required");
