@@ -418,8 +418,8 @@ void runMachswap2() {
 
 //V_SWAP
 
-uint64_t find_kernel_base() {
-    uint64_t hostport_addr = find_port_address(mach_host_self(), MACH_MSG_TYPE_COPY_SEND);
+uint64_t find_kernel_base_sockpuppet() {
+    uint64_t hostport_addr = find_port_address_sockpuppet(mach_host_self(), MACH_MSG_TYPE_COPY_SEND);
     uint64_t realhost = ReadKernel64(hostport_addr + koffset(KSTRUCT_OFFSET_IPC_PORT_IP_KOBJECT));
     
     uint64_t base = realhost & ~0xfffULL;
@@ -465,7 +465,7 @@ void runSockPuppet()
     
     if (MACH_PORT_VALID(tfp0))
     {
-        kbase = find_kernel_base();
+        kbase = find_kernel_base_sockpuppet();
         kernel_slide = (kbase - KADD_SEARCH);;
         
         runShenPatchOWO = true;
